@@ -1,6 +1,6 @@
-./data
-./node_modules
-./V1.0
+data/
+node_modules/
+V1.0/
 *.mkv
 *.bik
 *.mp4

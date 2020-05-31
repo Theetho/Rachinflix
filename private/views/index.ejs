@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Rachinflix</title>
+		<link rel="stylesheet" href="/public/style.css" />
+		<link rel="icon" type="image/png" href="/public/res/favicon.ico" />
+	</head>
+	<body>
+		<div id="header">
+			<a id="title" class="flex-item" href="./">
+				<img
+					id="rachinflix-logo"
+					src="/public/res/rachinflix.png"
+					alt="Rachinflix"
+				/>
+			</a>
+			<select name="user-language" id="user-language">
+				<option value="" disabled>Audio</option>
+				<option value="eng" selected>English</option>
+				<option value="fre">Francais</option>
+			</select>
+		</div>
+		<div id="container"></div>
+		<div id="viewer">
+			<video id="main-video" controls></video>
+			<div id="go-back">
+				<span><</span>
+				Back to navigation
+			</div>
+		</div>
+	</body>
+	<script src="/public/js/bundle.js"></script>
+</html>

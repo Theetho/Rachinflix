@@ -1,0 +1,245 @@
+body {
+	position: relative;
+	max-width: 100%;
+	height: 100vh;
+	width: 100vw;
+	padding: 0;
+	margin: 0;
+	color: rgb(225, 226, 227);
+	font-family: consolas, Arial, sans-serif;
+	background-color: rgb(20, 20, 20);
+
+	font-size: 24pt;
+	overflow-x: hidden;
+	cursor: default;
+	scroll-margin-top: 5%;
+}
+
+*::selection {
+	text-emphasis: none;
+}
+
+::-webkit-scrollbar {
+	background-color: black;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgb(40, 40, 40);
+}
+
+#header {
+	position: fixed;
+	display: flex;
+	height: 5%;
+	background-color: black;
+	width: 100%;
+	top: 0;
+	align-items: center;
+	z-index: 100;
+}
+
+#title {
+	height: 100%;
+	width: 10%;
+	margin-left: 3%;
+}
+
+#categories {
+	height: 100%;
+	width: 8%;
+	display: flex;
+	font-size: 12pt;
+	margin-left: 1em;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+	outline: 0;
+}
+
+a:visited {
+	color: inherit;
+}
+
+#rachinflix-logo {
+	color: red;
+	position: relative;
+	margin-top: 3%;
+	height: 80%;
+}
+
+#container {
+	position: relative;
+	display: flex;
+	padding: 5% 5% 5% 5%;
+	justify-content: space-around;
+	flex-direction: column;
+	z-index: 0;
+}
+
+.flex-item {
+	transition: 0.25s;
+	display: table-cell;
+	vertical-align: bottom;
+	line-height: 1.25vw;
+	font-size: 1.4vw;
+	font-weight: bold;
+}
+
+.categories-item {
+	transition: 0.25s all;
+}
+
+.categories-item:hover {
+	font-size: 14pt;
+}
+
+.section {
+	position: relative;
+}
+
+select {
+	outline: 0;
+	height: 2.5rem;
+	margin-left: 2%;
+	padding-left: 10px;
+	line-height: 2.5rem;
+	letter-spacing: 1px;
+	font-size: 1.25rem;
+	font-weight: bold;
+	box-sizing: border-box;
+	border: 1px solid rgba(255, 255, 255, 0.9);
+	display: inline-block;
+	color: #fff;
+	background-color: #000;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border-radius: 0;
+	position: relative;
+	padding-right: 30px;
+}
+
+select:hover {
+	cursor: pointer;
+}
+
+select#user-language {
+	position: absolute;
+	right: 2%;
+	height: 50%;
+	font-size: 40%;
+	line-height: 120%;
+}
+
+.files-area {
+	display: flex;
+	position: relative;
+	margin: 1.5% 0;
+	left: 0;
+	transition: 0.75s all;
+}
+
+.carousel {
+	position: relative;
+	display: flex;
+}
+
+.slider {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: black;
+	color: transparent;
+	opacity: 70%;
+	transition: 0.5s all;
+	display: none;
+}
+
+.slider:hover {
+	opacity: 80%;
+	color: white;
+	cursor: pointer;
+}
+
+.left-slider {
+	width: 5vw;
+	left: -5vw;
+	z-index: 4;
+}
+
+.right-slider {
+	width: 6vw;
+	right: -6vw;
+	z-index: 2;
+}
+
+.thumbnail,
+.slider {
+	height: 170px;
+}
+
+.thumbnail {
+	min-width: 335px;
+	width: 335px;
+	padding: 0px 2px;
+	transition: all 0.75s;
+	z-index: 3;
+}
+
+.thumbnail:hover {
+	transform: scale(1.2);
+	margin: 0 1.666vw;
+	transition: all 0.75s;
+	cursor: pointer;
+}
+
+video {
+	outline: 0;
+	transition: 0.75s all;
+}
+
+#viewer {
+	position: fixed;
+	height: 0%;
+	width: 0%;
+	top: 50%;
+	left: 50%;
+	transition: 0.5s all;
+	background-color: black;
+}
+
+#main-video {
+	width: 100%;
+	height: auto;
+}
+
+#go-back {
+	position: absolute;
+	width: auto;
+	font-size: 18pt;
+	top: 2%;
+	left: 2%;
+	transition: 0.75s all;
+	cursor: pointer;
+	color: transparent;
+}
+
+#go-back:hover {
+	transform: scale(1.1);
+	transition: 0.1s all;
+}
+
+::cue {
+	background-color: transparent;
+}
+
+/* Hide controls on fullscreen */
+.hide-controls::-webkit-media-controls {
+	display: none !important;
+	cursor: none;
+}
