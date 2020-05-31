@@ -1,0 +1,237 @@
+@media (max-width: 768px) {
+	::-webkit-scrollbar {
+		display: none;
+	}
+
+	::-webkit-scrollbar-thumb {
+		display: none;
+	}
+
+	#container {
+		padding-top: 7.5vh;
+		padding-left: 12.5vw;
+	}
+
+	#header {
+		position: fixed;
+		display: grid;
+		height: 3vh;
+		padding: 0.5vh 0;
+		background-color: black;
+		width: 100vw;
+		top: 0;
+		align-items: center;
+		z-index: 100;
+		grid-template-columns: 1fr 2fr 1fr;
+	}
+
+	#title {
+		position: relative;
+		height: 100%;
+		width: 10vw;
+		margin-left: 3vw;
+		grid-column: 1;
+	}
+
+	#categories {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		font-size: 1rem;
+		margin-left: 5vw;
+		justify-content: space-evenly;
+		align-items: center;
+		grid-column: 2;
+	}
+
+	#rachinflix-logo {
+		color: red;
+		position: relative;
+		height: 3vh;
+	}
+
+	select:not(#user-language) {
+		position: absolute;
+		right: 1vw;
+		top: -1vh;
+	}
+
+	select#user-language {
+		position: absolute;
+		right: 2%;
+		height: 50%;
+		font-size: 40%;
+		line-height: 120%;
+	}
+
+	.thumbnail,
+	.slider {
+		height: 17.5vh;
+	}
+
+	.thumbnail {
+		width: 70vw;
+		padding: 3vh 2px;
+		transition: all 0.75s;
+		z-index: 3;
+	}
+
+	.files-area {
+		display: flex;
+		position: relative;
+		margin: 1.5% 0;
+		left: 0;
+		transition: 0.75s all;
+		overflow-x: scroll;
+	}
+
+	.carousel {
+		display: flex;
+		position: relative;
+	}
+
+	.slider {
+		position: absolute;
+		display: none;
+		left: -999vw;
+	}
+
+	/* .slider:hover {
+		opacity: 80%;
+		color: white;
+		cursor: pointer;
+	}
+
+	.left-slider {
+		width: 5vw;
+		left: -5vw;
+		z-index: 4;
+	}
+
+	.right-slider {
+		width: 6vw;
+		right: -6vw;
+		z-index: 2;
+	} */
+}
+
+/* 
+
+*::selection {
+	text-emphasis: none;
+}
+
+
+
+#container {
+	position: relative;
+	display: flex;
+	padding: 5% 0% 5% 5%;
+	flex-direction: column;
+	z-index: 0;
+}
+
+.flex-item {
+	transition: 0.25s;
+	display: table-cell;
+	vertical-align: bottom;
+	line-height: 1.25rem;
+	font-size: 1.8rem;
+	font-weight: bold;
+}
+
+.categories-item {
+	transition: 0.25s all;
+}
+
+.categories-item:hover {
+	font-size: 1.1rem;
+}
+
+.section {
+	position: relative;
+}
+
+select {
+	outline: 0;
+	height: 2.5rem;
+	margin-left: 2%;
+	padding-left: 10px;
+	line-height: 2.5rem;
+	letter-spacing: 1px;
+	font-size: 1.25rem;
+	font-weight: bold;
+	box-sizing: border-box;
+	border: 1px solid rgba(255, 255, 255, 0.9);
+	display: inline-block;
+	color: #fff;
+	background-color: #000;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border-radius: 0;
+	position: relative;
+	padding-right: 30px;
+}
+
+select:hover {
+	cursor: pointer;
+}
+
+.thumbnail,
+.slider {
+	height: 17.5vh;
+}
+
+.thumbnail {
+	width: 17.5vw;
+	padding: 0px 2px;
+	transition: all 0.75s;
+	z-index: 3;
+}
+
+
+video {
+	outline: 0;
+	transition: 0.75s all;
+}
+
+#viewer {
+	position: fixed;
+	height: 0%;
+	width: 0%;
+	top: 50%;
+	left: 50%;
+	transition: 0.5s all;
+	background-color: black;
+}
+
+#main-video {
+	width: 100%;
+	height: auto;
+}
+
+#go-back {
+	position: absolute;
+	width: auto;
+	font-size: 18pt;
+	top: 2%;
+	left: 2%;
+	transition: 0.75s all;
+	cursor: pointer;
+	color: transparent;
+}
+
+#go-back:hover {
+	transform: scale(1.1);
+	transition: 0.1s all;
+}
+
+::cue {
+	background-color: transparent;
+}
+
+.hide-controls::-webkit-media-controls {
+	display: none !important;
+	cursor: none;
+} */

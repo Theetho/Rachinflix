@@ -190,10 +190,10 @@ export default class EventHandler {
 				const language = pView.mUserLanguage.selectedOptions[0].value
 
 				const viewer_style = {
-					height: '80%',
-					width: '80%',
-					top: '10%',
-					left: '10%',
+					height: '100%',
+					width: '100%',
+					top: '0%',
+					left: '0%',
 				}
 
 				Object.assign(pView.mViewer.style, viewer_style)
