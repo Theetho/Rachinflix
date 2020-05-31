@@ -1,0 +1,10 @@
+./data
+./node_modules
+./V1.0
+*.mkv
+*.bik
+*.mp4
+*.vtt
+*.srt
+*.png
+*.jpg
