@@ -229,16 +229,37 @@ export default class EventHandler {
 							default: pOptions.default,
 						})
 
+						// track.addEventListener('cuechange', (event) => {
+						// 	let track = event.target.track
+						// 	if (track.activeCues.length > 0) {
+						// 		track.activeCues[0].snapToLines = false
+						// 		track.activeCues[0].line = 90
+						// 		console.log(event)
+						// 	}
+						// })
+
 						pView.mVideo.appendChild(track)
+						return track
 					}
 
-					CreateTrack({
+					const MoveCuesUp = (cues) => {
+						if (!cues || !cues.length) return
+
+						for (let index = 0; index < cues.length; ++index) {
+							let cue = cues[index]
+							cue.snapToLines = false
+							cue.line = 90
+						}
+					}
+
+					let track_fr = CreateTrack({
 						id: 'sub-video-fre',
 						label: 'French',
 						language: 'fre',
 						default: true,
 					})
-					CreateTrack({
+
+					let track_eng = CreateTrack({
 						id: 'sub-video-eng',
 						label: 'English',
 						language: 'eng',
@@ -248,6 +269,12 @@ export default class EventHandler {
 					pView.mVideo.play().catch((error) => {
 						console.log(error)
 					})
+
+					// Moves each cues up after it is loaded
+					setTimeout(() => {
+						MoveCuesUp(track_fr.track.cues)
+						MoveCuesUp(track_eng.track.cues)
+					}, 2000)
 				}, 500)
 			})
 		}
