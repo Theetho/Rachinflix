@@ -3,21 +3,22 @@
 // NPM imports
 const express = require('express')
 const fs = require('fs')
-const ffprobe = require('ffmpeg-probe')
 let app = express()
 
 // Personnal imports
 const { ReplaceChar, RemoveChar } = require('./src/utils/removeChar')
 const ExtractSubtitles = require('./private/js/extractSubtitles')
 const ExtractInfo = require('./private/js/extractInfo')
-const ConvertFile = require('./private/js/convertFile')
+const Streamer = require('./private/js/streamer')
 
 // Constants
-const ENABLE_LOGGING = true
+const ENABLE_LOGGING = false
+const PATH_TO_THUMBNAILS = './public/temps'
 
 const port = '8080'
 const root = './data'
 //const root = 'E:/Site'
+const streamer = new Streamer()
 
 app.set('views', './private/views')
 app.set('view engine', 'ejs')
@@ -84,7 +85,7 @@ const GetFolderData = (
 				}
 
 				fs.readFile(
-					`./public/temps/${route_without_spaces_with_underscore}.jpg`,
+					`${PATH_TO_THUMBNAILS}/${route_without_spaces_with_underscore}.jpg`,
 					(err, data) => {
 						if (err) {
 							console.log(err)
@@ -118,14 +119,13 @@ const GetFolderData = (
 					}
 				}
 			)
-
 			// Route for videos
 			app.get(
 				[route_without_spaces, `${route_without_spaces}/:language`],
 				async (req, res) => {
-					// if (ENABLE_LOGGING) {
-					// 	console.log(`Request for ${route_without_spaces}`)
-					// }
+					if (ENABLE_LOGGING) {
+						console.log(`Request for ${route_without_spaces}`)
+					}
 
 					const language = req.params.language || 'eng'
 
@@ -139,7 +139,7 @@ const GetFolderData = (
 
 					if (!infos.readable) {
 						infos.language = language
-						file_path_copy = await ConvertFile(file_path, infos)
+						file_path_copy = await streamer.ConvertFile(file_path, infos)
 					}
 
 					const range = req.headers.range
@@ -194,17 +194,14 @@ const GetFolderData = (
 							'Content-Type': `video/${file_extension}`,
 						}
 
-						// const head = JSON.stringify({
-						// 	'Access-Control-Allow-Origin': '*',
-						// 	Connection: 'Keep-Alive',
-						// 	'Content-Type': `video/${file_extension}`,
-						// })
-
 						res.writeHead(200, head)
 						fs.createReadStream(file_path_copy).pipe(res)
 					}
 				}
 			)
+			app.get(`${route_without_spaces}/:language/end`, (req, res) => {
+				streamer.StopConverting(file_path)
+			})
 		}
 	})
 
@@ -217,79 +214,6 @@ let folderData = GetFolderData()
 app.get('/data', (req, res) => {
 	res.send(JSON.stringify(folderData))
 })
-
-// app.get(['/pipe', '/pipe/:timestamp'], (req, res) => {
-// 	const timestamp = req.params.timestamp || 0
-
-// 	const input_path =
-// 		//	'./data/Series/All american/Season 2/S02E02 - Speak Ya Clout.mkv'
-// 		'./unused/GOT1.mkv'
-// 	// 	'./data/Series/All american/Season 2/S02E04 - They Reminisce Over You.mkv'
-
-// 	let split = input_path.split('/')
-// 	const file_name = split[split.length - 1]
-// 	split = file_name.split('.')
-// 	const file_extension = split[split.length - 1]
-
-// 	const output_path = './private/streams/CONVERTED_' + file_name
-
-// 	const StreamVideo = () => {
-// 		console.log(content_size)
-
-// 		const stat_input = fs.statSync(input_path)
-// 		const stat_ouput = fs.statSync(output_path)
-
-// 		const file_size = Math.max(stat_input.size, stat_ouput.size)
-// 		const range = req.headers.range
-
-// 		if (range) {
-// 			const parts = range.replace(/bytes=/, '').split('-')
-// 			const start = parseInt(parts[0], 10)
-// 			const end = parts[1]
-// 				? parseInt(parts[1], 10)
-// 				: content_size /* file_size */ - 1
-// 			const chunksize = end - start + 1
-// 			const file = fs.createReadStream(output_path, { start, end })
-// 			const head = {
-// 				'Content-Range': `bytes ${start}-${end}/${
-// 					content_size /* file_size */
-// 				}`,
-// 				'Accept-Ranges': 'bytes',
-// 				'Content-Length': chunksize,
-// 				'Content-Type': `video/${file_extension}`,
-// 			}
-
-// 			console.log(
-// 				`bytes ${start}-${end}/${content_size /* file_size */}`,
-// 				chunksize
-// 			)
-
-// 			res.writeHead(206, head)
-// 			file.pipe(res)
-// 		} else {
-// 			const head = {
-// 				'Content-Length': file_size,
-// 				'Content-Type': `video/${file_extension}`,
-// 			}
-// 			res.writeHead(200, head)
-// 			fs.createReadStream(output_path).pipe(res)
-// 		}
-// 	}
-
-// 	if (!fs.existsSync(output_path) /* || timestamp > 0 */) {
-// 		console.log('Request, timeout')
-
-// 		CreateFileToStream(input_path, output_path)
-
-// 		setTimeout(() => {
-// 			StreamVideo()
-// 		}, 2000)
-// 	} else {
-// 		console.log('Request, NO timeout')
-
-// 		StreamVideo()
-// 	}
-// })
 
 // From https://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
 const os = require('os')

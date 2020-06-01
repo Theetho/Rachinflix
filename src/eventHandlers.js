@@ -66,6 +66,8 @@ export default class EventHandler {
 				'vjs-controls-disabled'
 			)
 
+			fetch(video.src + '/end')
+
 			// Reset the button so it can be visible next time
 			// We use this weird code to hide the text because otherwise, if you
 			// click the button and move the mouse, it stays on the screen because
@@ -212,11 +214,6 @@ export default class EventHandler {
 				setTimeout(async () => {
 					ClearChildren(pView.mVideo)
 
-					// const subtitles = await fetch(
-					// 	thumbnail.src.replace('thumbnail', 'subtitles') + '/fre'
-					// )
-
-					// console.log(subtitles)
 					const CreateTrack = (pOptions) => {
 						const track = CreateElement('track', {
 							id: pOptions.id,
@@ -229,37 +226,44 @@ export default class EventHandler {
 							default: pOptions.default,
 						})
 
-						// track.addEventListener('cuechange', (event) => {
-						// 	let track = event.target.track
-						// 	if (track.activeCues.length > 0) {
-						// 		track.activeCues[0].snapToLines = false
-						// 		track.activeCues[0].line = 90
-						// 		console.log(event)
-						// 	}
-						// })
+						track.addEventListener('load', (event) => {
+							let cues = event.target.track.cues
+							if (!cues || !cues.length) return
+
+							let index = 0
+
+							for (index = 0; index < cues.length; ++index) {
+								let cue = cues[index]
+								cue.snapToLines = false
+								cue.line = 90
+							}
+						})
 
 						pView.mVideo.appendChild(track)
-						return track
 					}
 
-					const MoveCuesUp = (cues) => {
-						if (!cues || !cues.length) return
-
-						for (let index = 0; index < cues.length; ++index) {
-							let cue = cues[index]
-							cue.snapToLines = false
-							cue.line = 90
-						}
-					}
-
-					let track_fr = CreateTrack({
-						id: 'sub-video-fre',
-						label: 'French',
-						language: 'fre',
+					CreateTrack({
+						id: 'sub-video-fre-forced',
+						label: 'French Forced',
+						language: 'fre_forced',
 						default: true,
 					})
 
-					let track_eng = CreateTrack({
+					CreateTrack({
+						id: 'sub-video-eng-forced',
+						label: 'English Forced',
+						language: 'eng_forced',
+						default: false,
+					})
+
+					CreateTrack({
+						id: 'sub-video-fre',
+						label: 'French',
+						language: 'fre',
+						default: false,
+					})
+
+					CreateTrack({
 						id: 'sub-video-eng',
 						label: 'English',
 						language: 'eng',
@@ -269,12 +273,6 @@ export default class EventHandler {
 					pView.mVideo.play().catch((error) => {
 						console.log(error)
 					})
-
-					// Moves each cues up after it is loaded
-					setTimeout(() => {
-						MoveCuesUp(track_fr.track.cues)
-						MoveCuesUp(track_eng.track.cues)
-					}, 2000)
 				}, 500)
 			})
 		}

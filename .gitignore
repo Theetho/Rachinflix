@@ -1,6 +1,7 @@
 data/
 node_modules/
 V1.0/
+public/js/bundle.js
 *.mkv
 *.bik
 *.mp4
