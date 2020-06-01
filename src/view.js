@@ -165,20 +165,37 @@ export default class View {
 				' '
 			)}`
 
-			let thumbnail = CreateElement('img', {
+			const file_info = CreateElement(
+				'div',
+				{
+					className: 'file-info',
+				},
+				[
+					CreateElement('div', {
+						className: 'file-name',
+						innerHTML: file.name
+							.replace(/S0*(\w+)E0*(\w+) - /, 'S$1:E$2 - "')
+							.replace('.mkv', '"')
+							.replace('.mp4', '"'),
+					}),
+				]
+			)
+
+			let thumbnail = CreateElement('video', {
 				className: 'thumbnail',
-				src: `/thumbnail:${server_path_to_file}`,
+				poster: `/thumbnail:${server_path_to_file}`,
 			})
 
+			file_info.appendChild(thumbnail)
 			const current_carousel = files_area.lastChild
 
 			// If the current carousel is full (meaning it contains 5 thumbnails)
-			if (current_carousel.getElementsByTagName('img').length == 5) {
+			if (current_carousel.getElementsByTagName('video').length == 5) {
 				// Then we have to create a new one to add the thumbnail.
 				// This thumbnail will be the first of its carousel, so it has
 				// to have its z-index at 1 so that the right slider of the previous
 				// carousel is over it when this new carousel is not active.
-				thumbnail.style.zIndex = 1
+				file_info.style.zIndex = 1
 
 				// We create a slider so that the previous carousel can give access
 				// to this new one. As 'file-area' only contains carousels, it 'childCount"
@@ -222,7 +239,8 @@ export default class View {
 			}
 
 			// And finally, we add the thumbnail to the correct carousel
-			files_area.lastChild.appendChild(thumbnail)
+			// files_area.lastChild.appendChild(thumbnail)
+			files_area.lastChild.appendChild(file_info)
 		}
 	}
 }

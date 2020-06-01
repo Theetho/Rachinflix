@@ -182,10 +182,10 @@ export default class EventHandler {
 		let thumbnails = document.getElementsByClassName('thumbnail')
 
 		for (let thumbnail of thumbnails) {
-			const video_source = `${thumbnail.src.replace('/thumbnail:', '')}`
-
-			// const video_source = '/pipe'
-			// const video_source = '/stream'
+			const video_source = `${thumbnail.poster.replace('/thumbnail:', '')}`
+			const file_description = thumbnail.parentElement.getElementsByClassName(
+				'file-name'
+			)[0]
 
 			// Open and play the selected video on click
 			thumbnail.addEventListener('click', (event) => {
@@ -208,6 +208,7 @@ export default class EventHandler {
 				// Else load it
 				else {
 					pView.mVideo.src = `${video_source}/${language}`
+					pView.mVideo.poster = thumbnail.poster
 					pView.mVideo.load()
 				}
 				// Play it after a little time
@@ -220,7 +221,7 @@ export default class EventHandler {
 							kind: 'captions',
 							label: pOptions.label,
 							src:
-								thumbnail.src.replace('thumbnail', 'subtitles') +
+								thumbnail.poster.replace('thumbnail', 'subtitles') +
 								'/' +
 								pOptions.language,
 							default: pOptions.default,
@@ -273,7 +274,48 @@ export default class EventHandler {
 					pView.mVideo.play().catch((error) => {
 						console.log(error)
 					})
+
+					const { top, left } = pView.mVideo.getBoundingClientRect()
+
+					Object.assign(pView.mBackButton.style, {
+						top: top + 20 + 'px',
+						left: left + 20 + 'px',
+					})
 				}, 500)
+			})
+
+			let tPlayPreview = null
+			// Plays the preview on over
+			thumbnail.addEventListener('mouseenter', (event) => {
+				if (tPlayPreview) clearTimeout(tPlayPreview)
+
+				file_description.style.color = 'white'
+
+				tPlayPreview = setTimeout(() => {
+					thumbnail.src = thumbnail.poster.replace('/thumbnail:', '/preview:')
+					// thumbnail.load()
+					thumbnail.play()
+				}, 1500)
+			})
+
+			thumbnail.addEventListener('mouseleave', (event) => {
+				if (tPlayPreview) clearTimeout(tPlayPreview)
+				thumbnail.style.opacity = '0.7'
+
+				file_description.style.color = 'transparent'
+
+				tPlayPreview = setTimeout(() => {
+					thumbnail.src = ''
+					thumbnail.style.opacity = '1'
+				}, 1000)
+			})
+
+			thumbnail.addEventListener('ended', (event) => {
+				if (tPlayPreview) clearTimeout(tPlayPreview)
+
+				tPlayPreview = setTimeout(() => {
+					thumbnail.src = ''
+				}, 1000)
 			})
 		}
 	}

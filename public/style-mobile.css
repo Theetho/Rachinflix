@@ -64,16 +64,23 @@
 		line-height: 120%;
 	}
 
-	.thumbnail,
+	.file-info,
 	.slider {
 		height: 17.5vh;
 	}
 
-	.thumbnail {
+	.file-info {
 		width: 70vw;
 		padding: 3vh 2px;
 		transition: all 0.75s;
 		z-index: 3;
+	}
+
+	.file-info:hover {
+		transform: scale(1.1);
+		margin: 0 5vw;
+		transition: all 0.75s;
+		cursor: pointer;
 	}
 
 	.files-area {

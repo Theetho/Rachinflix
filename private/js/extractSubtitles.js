@@ -4,6 +4,10 @@ const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const ffprobe = require('ffmpeg-probe')
 
+const ENABLE_LOGGING = false
+
+const PATH_SUBTITLES = '/public/temps/'
+
 /**
  * @brief: Extract subtitles from a video (only one per language (forced excluded))
  *
@@ -54,7 +58,7 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 		})
 
 	let result = subtitles.map((subtitle) => {
-		const subtitle_path = `./public/subtitles/${pName}_${subtitle.language}.vtt`
+		const subtitle_path = `.${PATH_SUBTITLES}/${pName}_${subtitle.language}.vtt`
 
 		return new Promise((resolve, reject) => {
 			// If the subtitle already exists, we don't need to reextract it
@@ -62,10 +66,8 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 			else {
 				ffmpeg(pInputFile)
 					.outputOption([`-map 0:${subtitle.index}`, `-c ${subtitle.codec}`])
-					.on('start', (commandLine) => {
-						console.log(
-							`Creating subtitle file '${subtitle_path}'. Executed ${commandLine}.`
-						)
+					.on('start', (command) => {
+						if (ENABLE_LOGGING) console.log(command)
 					})
 					.on('end', (stdout, stderr) => {
 						resolve(`${subtitle.language} VTT file created !`)

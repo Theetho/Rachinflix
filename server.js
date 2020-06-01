@@ -7,13 +7,14 @@ let app = express()
 
 // Personnal imports
 const { ReplaceChar, RemoveChar } = require('./src/utils/removeChar')
-const ExtractSubtitles = require('./private/js/extractSubtitles')
 const ExtractInfo = require('./private/js/extractInfo')
 const Streamer = require('./private/js/streamer')
 
 // Constants
 const ENABLE_LOGGING = false
-const PATH_TO_THUMBNAILS = './public/temps'
+const PATH_TO_THUMBNAILS = '/public/temps' // thumbnails'
+const PATH_TO_SUBTITLES = '/public/temps' // subtitles'
+const PATH_TO_PREVIEWS = '/public/temps' // previews'
 
 const port = '8080'
 const root = './data'
@@ -85,7 +86,7 @@ const GetFolderData = (
 				}
 
 				fs.readFile(
-					`${PATH_TO_THUMBNAILS}/${route_without_spaces_with_underscore}.jpg`,
+					`.${PATH_TO_THUMBNAILS}/${route_without_spaces_with_underscore}.jpg`,
 					(err, data) => {
 						if (err) {
 							console.log(err)
@@ -100,14 +101,16 @@ const GetFolderData = (
 			app.get(
 				`/subtitles:${route_without_spaces}/:language`,
 				async (req, res) => {
-					await ExtractSubtitles(
-						file_path,
-						route_without_spaces_with_underscore
-					)
+					// await ExtractSubtitles(
+					// 	file_path,
+					// 	route_without_spaces_with_underscore
+					// )
 
 					console.log('Request for subtitles: ' + req.params.language)
 
-					const subtitles_path = `/public/subtitles/${route_without_spaces_with_underscore}_${req.params.language}.vtt`
+					const subtitles_path = `${PATH_TO_SUBTITLES}/${route_without_spaces_with_underscore}_${req.params.language}.vtt`
+
+					console.log(subtitles_path)
 
 					if (fs.existsSync('.' + subtitles_path)) {
 						console.log('File exist. Sending it !')
@@ -119,6 +122,24 @@ const GetFolderData = (
 					}
 				}
 			)
+			app.get(`/preview:${route_without_spaces}`, (req, res) => {
+				if (ENABLE_LOGGING) {
+					console.log(`Request for the preview of ${route_without_spaces}`)
+				}
+
+				fs.readFile(
+					`.${PATH_TO_PREVIEWS}/${route_without_spaces_with_underscore}.mkv`,
+					(err, data) => {
+						if (err) {
+							console.log(err)
+							return
+						}
+						res.writeHead(200, { 'Content-Type': 'video/mkv' })
+						res.end(data)
+					}
+				)
+			})
+			// Route for previews
 			// Route for videos
 			app.get(
 				[route_without_spaces, `${route_without_spaces}/:language`],
@@ -199,6 +220,7 @@ const GetFolderData = (
 					}
 				}
 			)
+			// Notify the server when a video is stoped/closed
 			app.get(`${route_without_spaces}/:language/end`, (req, res) => {
 				streamer.StopConverting(file_path)
 			})
