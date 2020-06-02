@@ -174,9 +174,10 @@ export default class View {
 					CreateElement('div', {
 						className: 'file-name',
 						innerHTML: file.name
-							.replace(/S0*(\w+)E0*(\w+) - /, 'S$1:E$2 - "')
-							.replace('.mkv', '"')
-							.replace('.mp4', '"'),
+							.replace(/S0*(\w+)E0*/, 'S$1:E')
+							.replace(/([0-9]*) - /, '$1 - "')
+							.replace('HASH', '#')
+							.replace(/(.*)\.+(.*)/, '$1"'),
 					}),
 				]
 			)

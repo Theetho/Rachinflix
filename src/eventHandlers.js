@@ -61,11 +61,6 @@ export default class EventHandler {
 				display: 'none',
 			})
 
-			video.parentElement.className = video.parentElement.className.replace(
-				'vjs-controls-enabled',
-				'vjs-controls-disabled'
-			)
-
 			fetch(video.src + '/end')
 
 			// Reset the button so it can be visible next time
@@ -76,6 +71,7 @@ export default class EventHandler {
 				Object.assign(back_button.style, {
 					color: 'transparent',
 					display: 'unset',
+					pointerEvents: 'none',
 				})
 				// We also pause the video if it is playing
 				// if (!video.paused) video.pause()
@@ -87,6 +83,7 @@ export default class EventHandler {
 		// Hide them after a time.
 		video.addEventListener('mousemove', (event) => {
 			video.removeAttribute('class')
+			back_button.style.pointerEvents = 'all'
 			back_button.style.color = 'white'
 
 			clearTimeout(time_out)

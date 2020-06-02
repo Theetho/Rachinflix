@@ -4,7 +4,8 @@ const fs = require('fs')
 
 const ENABLE_LOGGING = true
 
-const ROOT = './data'
+const ROOT = 'E:/Site'
+// const ROOT = './data'
 
 const { ReplaceChar, RemoveChar } = require('../../src/utils/removeChar')
 const ExtractPreview = require('./extractPreview')
@@ -31,9 +32,13 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 		// If it is a folder, we explore it
 		if (result && result.isDirectory()) {
 			await ExploreDirectorySync(file, pPath)
+			// return
 			continue
 		}
 
+		if (file.includes('.txt')) continue
+
+		console.time('Time')
 		if (ENABLE_LOGGING) console.log(`File ${file}:`)
 
 		let route_without_spaces_with_underscores = ReplaceChar(
@@ -47,20 +52,23 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 		const input_path = `${ROOT}${route}`
 
 		try {
+			let message = ''
 			const preview_path = await ExtractPreview(
 				input_path,
 				route_without_spaces_with_underscores
 			)
-			if (ENABLE_LOGGING) console.log(`Preview generated`)
-			await ExtractThumbnail(
+			if (ENABLE_LOGGING) console.log(`	Preview generated !`)
+			message = await ExtractThumbnail(
 				preview_path,
 				route_without_spaces_with_underscores
 			)
-			if (ENABLE_LOGGING) console.log(`Thumbnail generated`)
+			if (ENABLE_LOGGING) console.log(`	${message}`)
 			await ExtractSubtitles(input_path, route_without_spaces_with_underscores)
-			if (ENABLE_LOGGING) console.log(`Subtitles generated`)
+			console.timeEnd('Time')
+			console.log('')
 		} catch (error) {
 			console.log(`Error: ${error}`)
+			console.timeEnd('Time')
 			continue
 		}
 	}

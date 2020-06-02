@@ -5,14 +5,14 @@ const ffmpeg = require('fluent-ffmpeg')
 
 const ENABLE_LOGGING = false
 
-const PATH_THUMBNAILS = '/public/temps/'
+const PATH_THUMBNAILS = '/public/thumbnails'
 
 const ExtractThumbnail = async (pPreviewFile, pName) => {
 	const thumbnail_path = `.${PATH_THUMBNAILS}/${pName}.jpg`
 
 	return new Promise(async (resolve, reject) => {
 		// If the subtitle already exists, we don't need to reextract it
-		if (fs.existsSync(thumbnail_path)) resolve('File already exists')
+		if (fs.existsSync(thumbnail_path)) resolve('Thumbnail already exists !')
 		else {
 			ffmpeg(pPreviewFile)
 				.outputOption(['-s 640x360', `-frames 1`])
@@ -20,7 +20,7 @@ const ExtractThumbnail = async (pPreviewFile, pName) => {
 					if (ENABLE_LOGGING) console.log(command)
 				})
 				.on('end', (stdout, stderr) => {
-					resolve()
+					resolve('Thumbnail generated !')
 				})
 				.on('error', (error, stdout, stderr) => {
 					reject('Error: ', error.message, stdout, stderr)

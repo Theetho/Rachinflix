@@ -4,7 +4,7 @@ const ffmpeg = require('fluent-ffmpeg')
 const ffprobe = require('ffmpeg-probe')
 const fs = require('fs')
 
-const OUTPUT_DIR = './private/streams'
+const OUTPUT_DIR = '/private/streams'
 const OUTPUT_PREFIXE = 'CONVERTED_'
 
 /**
@@ -61,7 +61,7 @@ class Streamer {
 
 		output_options.push(`-map 0:${audio.index}`)
 		output_options.push(`-acodec ${audio.codec}`)
-		output_options.push(`-b:a ${audio.bitrate.toString().replace('000', 'k')}`)
+		output_options.push(`-b:a ${audio.bitrate / 1000}k`)
 
 		this.mStreams[output_path] = { stream: null, finished: false }
 
@@ -80,8 +80,6 @@ class Streamer {
 			})
 			.on('error', (error, stdout, stderr) => {
 				console.log('Error: ', error.message)
-				console.log('Stdout: ', stdout)
-				console.log('Stderr: ', stderr)
 			})
 			.save(output_path)
 
@@ -118,11 +116,10 @@ class Streamer {
 
 		delete this.mStreams[output_path]
 		setTimeout((_) => {
-			const deleting_path = Math.random().toString() + '.mkv'
+			const deleting_path = `.${OUTPUT_DIR}/${Math.random()}.mkv`
 			fs.renameSync(output_path, deleting_path)
-			fs.unlink(deleting_path, (error, data) => {
-				console.log('File deleted')
-			})
+			fs.unlinkSync(deleting_path)
+			console.log('File deleted')
 		}, 1000)
 	}
 
@@ -172,7 +169,7 @@ class Streamer {
 		let split = pInputFile.split('/')
 		const file_name = split[split.length - 1].split('.')[0]
 
-		return OUTPUT_DIR + '/' + OUTPUT_PREFIXE + file_name + '.mkv'
+		return `.${OUTPUT_DIR}/${OUTPUT_PREFIXE}${file_name}.mkv`
 	}
 }
 module.exports = Streamer

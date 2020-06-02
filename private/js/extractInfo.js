@@ -33,6 +33,9 @@ const ExtractInfo = async (pInputFile) => {
 		const codec_name = stream['codec_name']
 
 		if (codec_type === 'video') {
+			// Video stream already registered
+			if (info.video.index >= 0) continue
+
 			info.video.index = index
 
 			// If the initial codec is not in READABLE_VIDEO, then the file can't be read

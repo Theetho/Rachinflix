@@ -189,7 +189,7 @@ select#user-language {
 	transition: all 0.75s;
 	z-index: 3;
 	display: grid;
-	grid-template-rows: 1fr 3fr 1fr;
+	grid-template-rows: 1fr 3fr 2fr;
 	grid-template-columns: 1fr 5fr 1fr;
 }
 
@@ -219,10 +219,9 @@ select#user-language {
 .file-name {
 	position: absolute;
 	text-align: left;
-	color: white;
+	color: transparent;
 	font-weight: normal;
 	font-size: 1rem;
-	color: rgba(255, 255, 255, 3);
 	grid-column: 1 / 4;
 	grid-row: 3;
 	padding-top: 0.5rem;
@@ -264,6 +263,7 @@ video {
 	transition: 0.75s all;
 	cursor: pointer;
 	color: transparent;
+	pointer-events: none;
 }
 
 #go-back:hover {

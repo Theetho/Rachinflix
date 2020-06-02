@@ -12,13 +12,13 @@ const Streamer = require('./private/js/streamer')
 
 // Constants
 const ENABLE_LOGGING = false
-const PATH_TO_THUMBNAILS = '/public/temps' // thumbnails'
-const PATH_TO_SUBTITLES = '/public/temps' // subtitles'
-const PATH_TO_PREVIEWS = '/public/temps' // previews'
+const PATH_TO_THUMBNAILS = '/public/thumbnails' // temps'
+const PATH_TO_SUBTITLES = '/public/subtitles' // temps'
+const PATH_TO_PREVIEWS = '/public/previews' // temps'
 
 const port = '8080'
-const root = './data'
-//const root = 'E:/Site'
+//const root = './data'
+const root = 'E:/Site'
 const streamer = new Streamer()
 
 app.set('views', './private/views')
@@ -204,7 +204,26 @@ const GetFolderData = (
 						}
 
 						res.writeHead(206, head)
-						fs.createReadStream(file_path_copy, { start, end }).pipe(res)
+						fs.createReadStream(file_path_copy, { start, end })
+							.pipe(res)
+							.on('drain', () => {
+								console.log('FS1: draining the stream')
+							})
+							.on('pipe', () => {
+								console.log('FS1: piping the stream')
+							})
+							.on('close', () => {
+								console.log('FS1: closing the stream')
+							})
+							.on('unpipe', () => {
+								console.log('FS1: unpiping the stream')
+							})
+							.on('finish', () => {
+								console.log('FS1: finish the stream')
+							})
+							.on('error', () => {
+								console.log('FS1: error the stream')
+							})
 					} else {
 						if (ENABLE_LOGGING) {
 							console.log('Sending full info')
@@ -216,7 +235,26 @@ const GetFolderData = (
 						}
 
 						res.writeHead(200, head)
-						fs.createReadStream(file_path_copy).pipe(res)
+						fs.createReadStream(file_path_copy)
+							.pipe(res)
+							.on('drain', () => {
+								console.log('FS2: draining the stream')
+							})
+							.on('pipe', () => {
+								console.log('FS2: piping the stream')
+							})
+							.on('close', () => {
+								console.log('FS2: closing the stream')
+							})
+							.on('unpipe', () => {
+								console.log('FS2: unpiping the stream')
+							})
+							.on('finish', () => {
+								console.log('FS2: finish the stream')
+							})
+							.on('error', () => {
+								console.log('FS2: error the stream')
+							})
 					}
 				}
 			)
