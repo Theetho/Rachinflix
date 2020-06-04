@@ -151,7 +151,7 @@ export default class View {
 					},
 					[
 						CreateElement('div', {
-							className: 'carousel',
+							className: 'carousel active',
 							id: folder + 'carousel-0',
 						}),
 					]
@@ -165,6 +165,19 @@ export default class View {
 				' '
 			)}`
 
+			split = file.name.split('.')
+
+			const file_name = file.name
+				// Remove .mkv, .mp4, ...
+				.replace('.' + split[split.length - 1], '')
+				// Remove '0' from S01E01 and add ':' between season and episode
+				.replace(/S0*([0-9]+)E0*/, 'S$1:E')
+				// Add the number of the episode
+				.replace(/([0-9]*) - /, '$1 - "')
+				.replace('HASH', '#')
+				// Add '"' if the video has a title
+				.concat(file.name.includes('-') ? '"' : '')
+
 			const file_info = CreateElement(
 				'div',
 				{
@@ -173,11 +186,7 @@ export default class View {
 				[
 					CreateElement('div', {
 						className: 'file-name',
-						innerHTML: file.name
-							.replace(/S0*(\w+)E0*/, 'S$1:E')
-							.replace(/([0-9]*) - /, '$1 - "')
-							.replace('HASH', '#')
-							.replace(/(.*)\.+(.*)/, '$1"'),
+						innerHTML: file_name,
 					}),
 				]
 			)

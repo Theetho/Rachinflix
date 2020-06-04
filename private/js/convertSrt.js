@@ -3,6 +3,7 @@ const OUTPUT_PATH = 'D:/Téléchargement/sub/VTT'
 const PREFIXE = '_Series_Allamerican_Season1_'
 const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
+const logger = require('../../src/logger')
 
 const RemoveChar = (str, char) => {
 	const reducer = (accumulator, currentValue) => accumulator + currentValue
@@ -17,7 +18,7 @@ const Convert = (pPathToFile, pName) => {
 		ffmpeg(pPathToFile)
 			.outputOption([`-c webvtt`])
 			.on('start', (commandLine) => {
-				console.log(commandLine)
+				logger.Debug(commandLine)
 			})
 			.on('end', (stdout, stderr) => {
 				resolve(`${output_path} created !`)
@@ -41,7 +42,7 @@ const Launch = async () => {
 		try {
 			await Convert(input_path, file_name)
 		} catch (error) {
-			console.log(error)
+			logger.Error(error)
 		}
 	}
 }

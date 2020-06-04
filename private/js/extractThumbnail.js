@@ -2,8 +2,7 @@
 
 const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
-
-const ENABLE_LOGGING = false
+const logger = require('../../src/logger')
 
 const PATH_THUMBNAILS = '/public/thumbnails'
 
@@ -17,7 +16,7 @@ const ExtractThumbnail = async (pPreviewFile, pName) => {
 			ffmpeg(pPreviewFile)
 				.outputOption(['-s 640x360', `-frames 1`])
 				.on('start', (command) => {
-					if (ENABLE_LOGGING) console.log(command)
+					logger.Debug(command)
 				})
 				.on('end', (stdout, stderr) => {
 					resolve('Thumbnail generated !')

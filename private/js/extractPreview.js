@@ -3,8 +3,7 @@
 const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const ffprobe = require('ffmpeg-probe')
-
-const ENABLE_LOGGING = false
+const logger = require('../../src/logger')
 
 const PATH_PREVIEWS = '/public/previews'
 const PREVIEW_DURATION = 30 // s
@@ -18,17 +17,6 @@ const ExtractPreview = async (pInputFile, pName) => {
 		else {
 			// start time in seconds, we want to read the input at 5%
 			const metadata = await ffprobe(pInputFile)
-			// const video_stream = null
-			// const index = 0
-			// while (video_stream === null) {
-			// 	const stream = metadata.streams[index]
-			// 	if (!stream.codec_name || stream.codec_name !== 'video') {
-			// 		++index
-			// 		continue
-			// 	}
-
-			// 	video_stream = stream
-			// }
 
 			const start_time = (metadata.format.duration * 0.05).toFixed(0)
 
@@ -45,16 +33,16 @@ const ExtractPreview = async (pInputFile, pName) => {
 				])
 				.noAudio()
 				.on('start', (command) => {
-					if (ENABLE_LOGGING) console.log(command)
+					console.Debug(command)
 				})
 				.on('progress', (progress) => {
-					if (ENABLE_LOGGING) console.log(progress.percent.toFixed(2))
+					console.Progress(progress.percent.toFixed(2))
 				})
 				.on('end', (stdout, stderr) => {
 					resolve(preview_path)
 				})
 				.on('error', (error, stdout, stderr) => {
-					reject('Error: ', error.message, stdout, stderr)
+					reject(error.message, stdout, stderr)
 				})
 				.save(preview_path)
 		}

@@ -1,8 +1,7 @@
 'use strict'
 
 const fs = require('fs')
-
-const ENABLE_LOGGING = true
+const logger = require('../../src/logger')
 
 const ROOT = 'E:/Site'
 // const ROOT = './data'
@@ -38,8 +37,8 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 
 		if (file.includes('.txt')) continue
 
-		console.time('Time')
-		if (ENABLE_LOGGING) console.log(`File ${file}:`)
+		logger.Start('Time')
+		logger.Info(`File ${file}:`)
 
 		let route_without_spaces_with_underscores = ReplaceChar(
 			route_without_spaces,
@@ -57,18 +56,18 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 				input_path,
 				route_without_spaces_with_underscores
 			)
-			if (ENABLE_LOGGING) console.log(`	Preview generated !`)
+			logger.Info(`	Preview generated !`)
 			message = await ExtractThumbnail(
 				preview_path,
 				route_without_spaces_with_underscores
 			)
-			if (ENABLE_LOGGING) console.log(`	${message}`)
+			logger.Info(`	${message}`)
 			await ExtractSubtitles(input_path, route_without_spaces_with_underscores)
-			console.timeEnd('Time')
-			console.log('')
+			logger.Stop('Time')
+			logger.NewLine()
 		} catch (error) {
-			console.log(`Error: ${error}`)
-			console.timeEnd('Time')
+			logger.Error(error)
+			logger.Stop('Time')
 			continue
 		}
 	}

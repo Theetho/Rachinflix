@@ -12,6 +12,7 @@ export default class EventHandler {
 		this.fListenersForVideo(this.mView)
 		this.fListenersForSliders()
 		this.fListenersForThumbnails(this.mView)
+		this.fListenersForFileInfos()
 	}
 
 	fListenersForHeader() {
@@ -127,6 +128,34 @@ export default class EventHandler {
 		// video.addEventListener('waiting', (event) => {
 		// 	console.log(event)
 		// })
+
+		// Scroll back to the position after exiting fullscreen
+		let scroll = [0, 0]
+		video.addEventListener('loadstart', (event) => {
+			// https://stackoverflow.com/questions/2481350/how-to-get-scrollbar-position-with-javascript
+			const fGetScroll = () => {
+				if (window.pageYOffset !== undefined) {
+					return [pageXOffset, pageYOffset]
+				} else {
+					var sx,
+						sy,
+						doc = document.documentElement,
+						body = document.body
+					sx = doc.scrollLeft || body.scrollLeft || 0
+					sy = doc.scrollTop || body.scrollTop || 0
+					return [sx, sy]
+				}
+			}
+
+			scroll = fGetScroll()
+		})
+
+		video.addEventListener('webkitfullscreenchange', (event) => {
+			// Only applies on exit
+			if (document.fullscreen) return
+
+			window.scrollTo({ left: scroll[0], top: scroll[1], behavior: 'auto' })
+		})
 	}
 
 	fListenersForSliders() {
@@ -155,10 +184,14 @@ export default class EventHandler {
 				link.style.display = 'none'
 			}
 
+			slider_carousel.setAttribute('class', 'carousel')
+
 			// And display the one of the new carousel
 			for (let link of next_carousel.getElementsByClassName('slider')) {
 				link.style.display = 'inherit'
 			}
+
+			next_carousel.setAttribute('class', 'carousel active')
 		}
 
 		for (let right_slider of right_sliders) {
@@ -224,6 +257,7 @@ export default class EventHandler {
 							default: pOptions.default,
 						})
 
+						// Move the subtitle's lines up a little
 						track.addEventListener('load', (event) => {
 							let cues = event.target.track.cues
 							if (!cues || !cues.length) return
@@ -284,20 +318,41 @@ export default class EventHandler {
 			let tPlayPreview = null
 			// Plays the preview on over
 			thumbnail.addEventListener('mouseenter', (event) => {
-				if (tPlayPreview) clearTimeout(tPlayPreview)
+				// if (tPlayPreview) clearTimeout(tPlayPreview)
 
 				file_description.style.color = 'white'
 
 				tPlayPreview = setTimeout(() => {
-					thumbnail.src = thumbnail.poster.replace('/thumbnail:', '/preview:')
-					// thumbnail.load()
-					thumbnail.play()
+					fetch(thumbnail.poster.replace('/thumbnail:', '/preview:'))
+						.then((response) => {
+							return response.blob()
+						})
+						.then((blob) => {
+							// from https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject
+							if ('srcObject' in thumbnail) {
+								try {
+									thumbnail.srcObject = blob
+								} catch (err) {
+									if (err.name != 'TypeError') {
+										console.log(err.message)
+									}
+									// Even if they do, they may only support MediaStream
+									thumbnail.src = URL.createObjectURL(blob)
+								}
+							} else {
+								// Avoid using this in new browsers, as it is going away.
+								thumbnail.src = URL.createObjectURL(blob)
+							}
+							thumbnail.muted = true
+							thumbnail.play()
+						})
 				}, 1500)
 			})
 
 			thumbnail.addEventListener('mouseleave', (event) => {
 				if (tPlayPreview) clearTimeout(tPlayPreview)
-				thumbnail.style.opacity = '0.7'
+
+				if (!thumbnail.paused) thumbnail.style.opacity = '0.7'
 
 				file_description.style.color = 'transparent'
 
@@ -313,6 +368,47 @@ export default class EventHandler {
 				tPlayPreview = setTimeout(() => {
 					thumbnail.src = ''
 				}, 1000)
+			})
+		}
+	}
+
+	fListenersForFileInfos() {
+		const sections = document.getElementsByClassName('section')
+
+		for (let section of sections) {
+			let tHover = null
+
+			// Trigger hover effect on thumbnails 1 sec after the mouse enters in the carousels
+			section.addEventListener('mouseenter', (event) => {
+				if (tHover) clearTimeout(tHover)
+
+				const infos = section.getElementsByClassName('file-info')
+				tHover = setTimeout(() => {
+					for (let info of infos) {
+						info.className = 'file-info file-info-hoverable'
+					}
+				}, 1000)
+			})
+			// If the hover is not trigger already, then it triggers it on 'over'
+			section.addEventListener('mouseover', (event) => {
+				if (tHover) clearTimeout(tHover)
+
+				const infos = section.getElementsByClassName('file-info')
+				tHover = setTimeout(() => {
+					for (let info of infos) {
+						info.className = 'file-info file-info-hoverable'
+					}
+				}, 1000)
+			})
+			// Remove the effect when leaving the carousel
+			section.addEventListener('mouseleave', (event) => {
+				if (tHover) clearTimeout(tHover)
+
+				const infos = section.getElementsByClassName('file-info-hoverable')
+				while (infos.length) {
+					let info = infos[0]
+					info.className = 'file-info'
+				}
 			})
 		}
 	}

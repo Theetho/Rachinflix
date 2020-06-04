@@ -186,17 +186,18 @@ select#user-language {
 	position: relative;
 	width: 17.5vw;
 	padding: 0px 2px;
-	transition: all 0.75s;
+	transition: all 0.5s;
+	transition-delay: 0.25s;
 	z-index: 3;
 	display: grid;
 	grid-template-rows: 1fr 3fr 2fr;
 	grid-template-columns: 1fr 5fr 1fr;
 }
 
-.file-info:hover {
-	transform: scale(1.2);
-	margin: 0 1.666vw;
-	transition: all 0.75s;
+.file-info-hoverable:hover {
+	transform: scale(1.55);
+	transition-delay: 0.5s;
+	margin: 0 4.8vw;
 	cursor: pointer;
 }
 
@@ -228,11 +229,11 @@ select#user-language {
 	padding-left: 1rem;
 	transition: 1s all;
 	z-index: 1;
+	pointer-events: none;
 }
 
 video {
 	outline: 0;
-	transition: 0.75s all;
 }
 
 #viewer {

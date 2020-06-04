@@ -9,9 +9,10 @@ let app = express()
 const { ReplaceChar, RemoveChar } = require('./src/utils/removeChar')
 const ExtractInfo = require('./private/js/extractInfo')
 const Streamer = require('./private/js/streamer')
+const logger = require('./src/logger')
+logger.SetLevel(3)
 
 // Constants
-const ENABLE_LOGGING = false
 const PATH_TO_THUMBNAILS = '/public/thumbnails' // temps'
 const PATH_TO_SUBTITLES = '/public/subtitles' // temps'
 const PATH_TO_PREVIEWS = '/public/previews' // temps'
@@ -81,15 +82,13 @@ const GetFolderData = (
 			pTarget[file].isFile = true
 			// Route for thumbnails
 			app.get(`/thumbnail:${route_without_spaces}`, (req, res) => {
-				if (ENABLE_LOGGING) {
-					console.log(`Request for the thumbnail of ${route_without_spaces}`)
-				}
+				logger.Debug(`Request for the thumbnail of ${route_without_spaces}`)
 
 				fs.readFile(
 					`.${PATH_TO_THUMBNAILS}/${route_without_spaces_with_underscore}.jpg`,
 					(err, data) => {
 						if (err) {
-							console.log(err)
+							logger.Error(err)
 							return
 						}
 						res.writeHead(200, { 'Content-Type': 'image/jpeg' })
@@ -106,32 +105,29 @@ const GetFolderData = (
 					// 	route_without_spaces_with_underscore
 					// )
 
-					console.log('Request for subtitles: ' + req.params.language)
+					logger.Info('Request for subtitles: ' + req.params.language)
 
 					const subtitles_path = `${PATH_TO_SUBTITLES}/${route_without_spaces_with_underscore}_${req.params.language}.vtt`
 
-					console.log(subtitles_path)
-
 					if (fs.existsSync('.' + subtitles_path)) {
-						console.log('File exist. Sending it !')
+						logger.Info('File exist. Sending it !')
 						res.sendFile(__dirname + subtitles_path)
 					} else {
-						console.log('File does not exist !')
+						logger.Info('File does not exist !')
 						res.writeHead(404)
 						res.end()
 					}
 				}
 			)
+			// Route for previews
 			app.get(`/preview:${route_without_spaces}`, (req, res) => {
-				if (ENABLE_LOGGING) {
-					console.log(`Request for the preview of ${route_without_spaces}`)
-				}
+				logger.Debug(`Request for the preview of ${route_without_spaces}`)
 
 				fs.readFile(
 					`.${PATH_TO_PREVIEWS}/${route_without_spaces_with_underscore}.mkv`,
 					(err, data) => {
 						if (err) {
-							console.log(err)
+							logger.Error(err)
 							return
 						}
 						res.writeHead(200, { 'Content-Type': 'video/mkv' })
@@ -139,14 +135,11 @@ const GetFolderData = (
 					}
 				)
 			})
-			// Route for previews
 			// Route for videos
 			app.get(
 				[route_without_spaces, `${route_without_spaces}/:language`],
 				async (req, res) => {
-					if (ENABLE_LOGGING) {
-						console.log(`Request for ${route_without_spaces}`)
-					}
+					logger.Debug(`Request for ${route_without_spaces}`)
 
 					const language = req.params.language || 'eng'
 
@@ -164,7 +157,15 @@ const GetFolderData = (
 					}
 
 					const range = req.headers.range
-					const converted_file_size = fs.statSync(file_path_copy).size
+					let converted_file_size = 0
+
+					try {
+						converted_file_size = fs.statSync(file_path_copy).size
+					} catch (error) {
+						logger.Error(error)
+						res.status(404).end()
+						return
+					}
 					// If the converted file is bigger than the original, then it becomes
 					// the file size
 					file_size = Math.max(file_size, converted_file_size)
@@ -192,43 +193,37 @@ const GetFolderData = (
 							'Content-Type': `video/${file_extension}`,
 						}
 
-						if (ENABLE_LOGGING) {
-							console.log({
-								request: { start: parts[0], end: parts[1] },
-								response: { start: start, end: end },
-								size: {
-									initial: file_size,
-									now: converted_file_size,
-								},
-							})
-						}
+						logger.Debug({
+							request: { start: parts[0], end: parts[1] },
+							response: { start: start, end: end },
+							size: {
+								initial: file_size,
+								now: converted_file_size,
+							},
+						})
 
 						res.writeHead(206, head)
 						fs.createReadStream(file_path_copy, { start, end })
 							.pipe(res)
 							.on('drain', () => {
-								console.log('FS1: draining the stream')
+								logger.Debug('FS1: draining the stream')
 							})
 							.on('pipe', () => {
-								console.log('FS1: piping the stream')
+								logger.Debug('FS1: piping the stream')
 							})
 							.on('close', () => {
-								console.log('FS1: closing the stream')
+								logger.Debug('FS1: closing the stream')
 							})
 							.on('unpipe', () => {
-								console.log('FS1: unpiping the stream')
+								logger.Debug('FS1: unpiping the stream')
 							})
 							.on('finish', () => {
-								console.log('FS1: finish the stream')
+								logger.Debug('FS1: finish the stream')
 							})
 							.on('error', () => {
-								console.log('FS1: error the stream')
+								logger.Error('FS1: error the stream')
 							})
 					} else {
-						if (ENABLE_LOGGING) {
-							console.log('Sending full info')
-						}
-
 						const head = {
 							'Content-Length': file_size,
 							'Content-Type': `video/${file_extension}`,
@@ -238,22 +233,22 @@ const GetFolderData = (
 						fs.createReadStream(file_path_copy)
 							.pipe(res)
 							.on('drain', () => {
-								console.log('FS2: draining the stream')
+								logger.Debug('FS2: draining the stream')
 							})
 							.on('pipe', () => {
-								console.log('FS2: piping the stream')
+								logger.Debug('FS2: piping the stream')
 							})
 							.on('close', () => {
-								console.log('FS2: closing the stream')
+								logger.Debug('FS2: closing the stream')
 							})
 							.on('unpipe', () => {
-								console.log('FS2: unpiping the stream')
+								logger.Debug('FS2: unpiping the stream')
 							})
 							.on('finish', () => {
-								console.log('FS2: finish the stream')
+								logger.Debug('FS2: finish the stream')
 							})
 							.on('error', () => {
-								console.log('FS2: error the stream')
+								logger.Error('FS2: error the stream')
 							})
 					}
 				}
@@ -301,6 +296,6 @@ for (let ifname of Object.keys(ifaces)) {
 	}
 }
 
-app.listen(port, () => {
-	console.log(`Site lancé sur '${addresses['Ethernet']}:${port}'`)
+app.listen(port, addresses['Ethernet'], () => {
+	logger.Info(`Site lancé sur '${addresses['Ethernet']}:${port}'`)
 })

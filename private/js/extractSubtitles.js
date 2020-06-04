@@ -3,8 +3,7 @@
 const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const ffprobe = require('ffmpeg-probe')
-
-const ENABLE_LOGGING = false
+const logger = require('../../src/logger')
 
 const PATH_SUBTITLES = '/public/subtitles'
 
@@ -33,7 +32,7 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 		const codec_name = stream['codec_name']
 
 		// if (!stream.tags || !stream.tags.language)
-		// 	console.log(stream.tags === undefined ? stream : stream.tags)
+		// 	logger.Debug(stream.tags === undefined ? stream : stream.tags)
 
 		let language = 'NS'
 
@@ -60,7 +59,7 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 	}
 
 	if (subtitles.length === 0) {
-		console.log('	No subtitles in that file')
+		logger.Info('	No subtitles in that file')
 		return
 	}
 	// return new Promise((resolve, reject) => {
@@ -76,13 +75,13 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 				ffmpeg(pInputFile)
 					.outputOption([`-map 0:${subtitle.index}`, `-c ${subtitle.codec}`])
 					.on('start', (command) => {
-						if (ENABLE_LOGGING) console.log(command)
+						logger.Debug(command)
 					})
 					.on('end', (stdout, stderr) => {
 						resolve(`	Subtitle ${subtitle.language} generated`)
 					})
 					.on('error', (error, stdout, stderr) => {
-						reject('Error: ', error.message)
+						reject(error.message)
 					})
 					.save(subtitle_path)
 			}
@@ -95,9 +94,9 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 
 		try {
 			const message = await extract(subtitle_path, subtitle)
-			console.log(message)
+			logger.Info(message)
 		} catch (error) {
-			console.log(error)
+			logger.Error(error)
 		}
 	}
 }

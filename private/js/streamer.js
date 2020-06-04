@@ -3,6 +3,7 @@
 const ffmpeg = require('fluent-ffmpeg')
 const ffprobe = require('ffmpeg-probe')
 const fs = require('fs')
+const logger = require('../../src/logger')
 
 const OUTPUT_DIR = '/private/streams'
 const OUTPUT_PREFIXE = 'CONVERTED_'
@@ -68,18 +69,19 @@ class Streamer {
 		this.mStreams[output_path].stream = ffmpeg(pInputFile)
 			.outputOptions(output_options)
 			.on('start', (commandLine) => {
-				console.log(`Streaming ${pInputFile}. Executed ${commandLine}.`)
+				logger.Debug(`Streaming ${pInputFile}. Executed ${commandLine}.`)
 				this.mStreams[output_path].finished = false
 			})
 			.on('end', (stdout, stderr) => {
-				console.log(`Streaming is over`)
+				logger.Debug(`Streaming is over`)
 				this.mStreams[output_path].finished = true
 			})
 			.on('progress', (progress) => {
-				console.log('Processing: ' + progress.percent.toFixed(2) + '% done')
+				logger.Progress(progress.percent.toFixed(2))
 			})
 			.on('error', (error, stdout, stderr) => {
-				console.log('Error: ', error.message)
+				if (error.message !== 'ffmpeg was killed with signal SIGKILL')
+					logger.Error(error.message, stdout, stderr)
 			})
 			.save(output_path)
 
@@ -87,7 +89,7 @@ class Streamer {
 		// over the streaming
 		return new Promise((resolve, reject) => {
 			setTimeout((_) => {
-				console.log('Way-ing ay lilel')
+				logger.Debug('Way-ing ay liel')
 				resolve(output_path)
 			}, 5000)
 		})
@@ -119,7 +121,7 @@ class Streamer {
 			const deleting_path = `.${OUTPUT_DIR}/${Math.random()}.mkv`
 			fs.renameSync(output_path, deleting_path)
 			fs.unlinkSync(deleting_path)
-			console.log('File deleted')
+			logger.Info('File deleted')
 		}, 1000)
 	}
 
@@ -158,10 +160,10 @@ class Streamer {
 			try {
 				fs.copyFileSync(output_path, pInputFile)
 			} catch (error) {
-				console.log(`Error while overriding ${pInputFile}`)
+				logger.Error(`Error while overriding ${pInputFile}`)
 			}
 
-			console.log(`Overrided ${pInputFile} sucessfully !`)
+			logger.Info(`Overrided ${pInputFile} sucessfully !`)
 		}
 	}
 
