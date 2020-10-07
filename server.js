@@ -9,18 +9,22 @@ let app = express()
 const { ReplaceChar, RemoveChar } = require('./src/utils/removeChar')
 const ExtractInfo = require('./private/js/extractInfo')
 const Streamer = require('./private/js/streamer')
+const Recommender = require('./private/js/recommender')
 const logger = require('./src/logger')
 logger.SetLevel(3)
 
 // Constants
-const PATH_TO_THUMBNAILS = '/public/thumbnails' // temps'
-const PATH_TO_SUBTITLES = '/public/subtitles' // temps'
-const PATH_TO_PREVIEWS = '/public/previews' // temps'
+const {
+	ROOT,
+	PATH_THUMBNAILS,
+	PATH_SUBTITLES,
+	PATH_PREVIEWS,
+} = require('./private/js/constants')
 
 const port = '8080'
-//const root = './data'
-const root = 'E:/Site'
+
 const streamer = new Streamer()
+let recommender = {}
 
 app.set('views', './private/views')
 app.set('view engine', 'ejs')
@@ -32,7 +36,11 @@ app.get('/', (req, res) => {
 	res.render('index')
 })
 
-// Explore recursively the 'root' folder, and store every file and folder it contains
+app.get('/test', (req, res) => {
+	res.render('test')
+})
+
+// Explore recursively the 'ROOT' folder, and store every file and folder it contains
 // into 'target', which is returned at the end. Also create two routes for every file:
 // One for its thumbnail, one for the file itself.
 const GetFolderData = (
@@ -41,13 +49,13 @@ const GetFolderData = (
 	pPath = '',
 	pParent = ''
 ) => {
-	// Path to the folder is relative to the root
+	// Path to the folder is relative to the ROOT
 	if (pFolder !== '' && pFolder[0] !== '/') pPath += '/'
 
 	pPath += pFolder
 
-	// So to read this folder, we concatenate the 'root'
-	let data = fs.readdirSync(`${root}${pPath}`)
+	// So to read this folder, we concatenate the 'ROOT'
+	let data = fs.readdirSync(`${ROOT}${pPath}`)
 
 	// Then for each file or folder inside this folder
 	data.forEach((file) => {
@@ -69,7 +77,7 @@ const GetFolderData = (
 			'/',
 			'_'
 		)
-		let file_path = `${root}${route}`
+		let file_path = `${ROOT}${route}`
 		let file_stats = fs.statSync(file_path)
 
 		// If it is a folder, we explore it
@@ -85,10 +93,17 @@ const GetFolderData = (
 				logger.Debug(`Request for the thumbnail of ${route_without_spaces}`)
 
 				fs.readFile(
-					`.${PATH_TO_THUMBNAILS}/${route_without_spaces_with_underscore}.jpg`,
+					`.${PATH_THUMBNAILS}/${route_without_spaces_with_underscore}.jpg`,
 					(err, data) => {
 						if (err) {
 							logger.Error(err)
+							fs.readFile(`./public/res/error.png`, (error, placeholder) => {
+								if (error) {
+									logger.Error(error)
+								}
+								res.writeHead(200, { 'Content-Type': 'image/png' })
+								res.end(placeholder)
+							})
 							return
 						}
 						res.writeHead(200, { 'Content-Type': 'image/jpeg' })
@@ -100,17 +115,12 @@ const GetFolderData = (
 			app.get(
 				`/subtitles:${route_without_spaces}/:language`,
 				async (req, res) => {
-					// await ExtractSubtitles(
-					// 	file_path,
-					// 	route_without_spaces_with_underscore
-					// )
-
 					logger.Info('Request for subtitles: ' + req.params.language)
 
-					const subtitles_path = `${PATH_TO_SUBTITLES}/${route_without_spaces_with_underscore}_${req.params.language}.vtt`
+					const subtitles_path = `${PATH_SUBTITLES}/${route_without_spaces_with_underscore}_${req.params.language}.vtt`
 
 					if (fs.existsSync('.' + subtitles_path)) {
-						logger.Info('File exist. Sending it !')
+						logger.Info('File exists. Sending it !')
 						res.sendFile(__dirname + subtitles_path)
 					} else {
 						logger.Info('File does not exist !')
@@ -124,7 +134,7 @@ const GetFolderData = (
 				logger.Debug(`Request for the preview of ${route_without_spaces}`)
 
 				fs.readFile(
-					`.${PATH_TO_PREVIEWS}/${route_without_spaces_with_underscore}.mkv`,
+					`.${PATH_PREVIEWS}/${route_without_spaces_with_underscore}.mkv`,
 					(err, data) => {
 						if (err) {
 							logger.Error(err)
@@ -203,26 +213,7 @@ const GetFolderData = (
 						})
 
 						res.writeHead(206, head)
-						fs.createReadStream(file_path_copy, { start, end })
-							.pipe(res)
-							.on('drain', () => {
-								logger.Debug('FS1: draining the stream')
-							})
-							.on('pipe', () => {
-								logger.Debug('FS1: piping the stream')
-							})
-							.on('close', () => {
-								logger.Debug('FS1: closing the stream')
-							})
-							.on('unpipe', () => {
-								logger.Debug('FS1: unpiping the stream')
-							})
-							.on('finish', () => {
-								logger.Debug('FS1: finish the stream')
-							})
-							.on('error', () => {
-								logger.Error('FS1: error the stream')
-							})
+						fs.createReadStream(file_path_copy, { start, end }).pipe(res)
 					} else {
 						const head = {
 							'Content-Length': file_size,
@@ -230,32 +221,20 @@ const GetFolderData = (
 						}
 
 						res.writeHead(200, head)
-						fs.createReadStream(file_path_copy)
-							.pipe(res)
-							.on('drain', () => {
-								logger.Debug('FS2: draining the stream')
-							})
-							.on('pipe', () => {
-								logger.Debug('FS2: piping the stream')
-							})
-							.on('close', () => {
-								logger.Debug('FS2: closing the stream')
-							})
-							.on('unpipe', () => {
-								logger.Debug('FS2: unpiping the stream')
-							})
-							.on('finish', () => {
-								logger.Debug('FS2: finish the stream')
-							})
-							.on('error', () => {
-								logger.Error('FS2: error the stream')
-							})
+						fs.createReadStream(file_path_copy).pipe(res)
 					}
 				}
 			)
 			// Notify the server when a video is stoped/closed
-			app.get(`${route_without_spaces}/:language/end`, (req, res) => {
+			app.get(`${route_without_spaces}/:language/end/:progress`, (req, res) => {
 				streamer.StopConverting(file_path)
+				// We consider the file entirely watched when the user
+				// has seen more than 90%. So we store the next one
+				recommender.AddFile(
+					file_path,
+					route_without_spaces,
+					req.params.progress
+				)
 			})
 		}
 	})
@@ -264,11 +243,20 @@ const GetFolderData = (
 }
 
 let folderData = GetFolderData()
+recommender = new Recommender(folderData)
 
-// Send the 'Root folder' hierarchie
+// Send the 'ROOT folder' hierarchie
 app.get('/data', (req, res) => {
 	res.send(JSON.stringify(folderData))
 })
+
+app.get('/recommendation', (req, res) => {
+	res.send(JSON.stringify(recommender.mRecommendations))
+})
+
+// app.get('/user-disconnected', (req, res) => {
+// 	recommender.Save()
+// })
 
 // From https://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
 const os = require('os')
@@ -299,3 +287,7 @@ for (let ifname of Object.keys(ifaces)) {
 app.listen(port, addresses['Ethernet'], () => {
 	logger.Info(`Site lancé sur '${addresses['Ethernet']}:${port}'`)
 })
+
+// app.listen(port, '127.0.0.1', () => {
+// 	logger.Info(`Site lancé sur 127.0.0.1:${port}'`)
+// })

@@ -8,7 +8,9 @@
 		"prestart": "webpack",
 		"start": "node server.js",
 		"build": "webpack --watch",
-		"dev": "nodemon server.js"
+		"dev": "nodemon server.js",
+		"launch": "node server.js",
+		"extract": "node private/js/extractData.js"
 	},
 	"keywords": [],
 	"author": "",
@@ -26,7 +28,9 @@
 		"ffmpeg-generate-video-preview": "^1.0.3",
 		"fluent-ffmpeg": "^2.1.2",
 		"nodemon": "^2.0.4",
-		"video.js": "^7.7.6"
+		"video.js": "^7.7.6",
+		"vue": "^2.6.11",
+		"vue-cli": "^2.9.6"
 	},
 	"nodemonConfig": {
 		"ext": "js"

@@ -2,16 +2,14 @@
 
 const fs = require('fs')
 const logger = require('../../src/logger')
-
-const ROOT = 'E:/Site'
-// const ROOT = './data'
+const { ROOT } = require('./constants')
 
 const { ReplaceChar, RemoveChar } = require('../../src/utils/removeChar')
 const ExtractPreview = require('./extractPreview')
 const ExtractThumbnail = require('./extractThumbnail')
 const ExtractSubtitles = require('./extractSubtitles')
 
-const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
+const ExtractData = async (pFolder = '', pPath = '') => {
 	// Path to the folder, relative to the ROOT
 	if (pFolder !== '' && pFolder[0] !== '/') pPath += '/'
 
@@ -30,7 +28,7 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 
 		// If it is a folder, we explore it
 		if (result && result.isDirectory()) {
-			await ExploreDirectorySync(file, pPath)
+			await ExtractData(file, pPath)
 			// return
 			continue
 		}
@@ -51,18 +49,23 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 		const input_path = `${ROOT}${route}`
 
 		try {
-			let message = ''
-			const preview_path = await ExtractPreview(
+			const preview = await ExtractPreview(
 				input_path,
-				route_without_spaces_with_underscores
+				`${route_without_spaces_with_underscores}`
 			)
-			logger.Info(`	Preview generated !`)
-			message = await ExtractThumbnail(
-				preview_path,
-				route_without_spaces_with_underscores
+
+			if (preview.generated) logger.Info(`	Preview generated !`)
+			const thumbnail = await ExtractThumbnail(
+				preview.path,
+				`${route_without_spaces_with_underscores}`
 			)
-			logger.Info(`	${message}`)
-			await ExtractSubtitles(input_path, route_without_spaces_with_underscores)
+
+			if (thumbnail.generated) logger.Info(`	${thumbnail.message}`)
+			await ExtractSubtitles(
+				input_path,
+				`${route_without_spaces_with_underscores}`
+			)
+
 			logger.Stop('Time')
 			logger.NewLine()
 		} catch (error) {
@@ -73,6 +76,6 @@ const ExploreDirectorySync = async (pFolder = '', pPath = '') => {
 	}
 }
 
-ExploreDirectorySync()
+ExtractData()
 
-module.exports = ExtractPreview
+module.exports = ExtractData

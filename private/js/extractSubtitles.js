@@ -4,8 +4,7 @@ const fs = require('fs')
 const ffmpeg = require('fluent-ffmpeg')
 const ffprobe = require('ffmpeg-probe')
 const logger = require('../../src/logger')
-
-const PATH_SUBTITLES = '/public/subtitles'
+const { PATH_SUBTITLES } = require('./constants')
 
 /**
  * @brief: Extract subtitles from a video (only one per language (forced excluded))
@@ -62,15 +61,12 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 		logger.Info('	No subtitles in that file')
 		return
 	}
-	// return new Promise((resolve, reject) => {
-	// 	resolve('No subtitles in that file')
-	// })
 
 	const extract = async (subtitle_path, subtitle) => {
 		return new Promise((resolve, reject) => {
 			// If the subtitle already exists, we don't need to reextract it
 			if (fs.existsSync(subtitle_path))
-				resolve(`	Subtitle ${subtitle.language} already exists`)
+				resolve({ generated: false, message: '' })
 			else {
 				ffmpeg(pInputFile)
 					.outputOption([`-map 0:${subtitle.index}`, `-c ${subtitle.codec}`])
@@ -78,7 +74,10 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 						logger.Debug(command)
 					})
 					.on('end', (stdout, stderr) => {
-						resolve(`	Subtitle ${subtitle.language} generated`)
+						resolve({
+							generated: true,
+							message: `	Subtitle ${subtitle.language} generated`,
+						})
 					})
 					.on('error', (error, stdout, stderr) => {
 						reject(error.message)
@@ -93,8 +92,8 @@ const ExtractSubtitles = async (pInputFile, pName) => {
 		const subtitle_path = `.${PATH_SUBTITLES}/${pName}_${subtitle.language}.vtt`
 
 		try {
-			const message = await extract(subtitle_path, subtitle)
-			logger.Info(message)
+			const result = await extract(subtitle_path, subtitle)
+			if (result.generated) logger.Info(result.message)
 		} catch (error) {
 			logger.Error(error)
 		}

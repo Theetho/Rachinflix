@@ -6,7 +6,7 @@ export default class Model extends Observable {
 		super()
 	}
 
-	async initialise() {
+	async Initialise() {
 		let response = await fetch('/data')
 
 		if (!response.ok) console.log('HTTP-Error: ' + response.status)
@@ -18,14 +18,17 @@ export default class Model extends Observable {
 		this.mSeasons = []
 		this.mTitles = []
 
-		this.fUnpack(data_from_server)
+		response = await fetch('/recommendation')
+		this.mRecommendations = await response.json()
+
+		this.Destructurate(data_from_server)
 
 		this.SetChanged()
 		this.NotifyObservers()
 	}
 
 	// Destructurate the tree sent by the server into several objects
-	fUnpack(tree, path = '/') {
+	Destructurate(tree, path = '/') {
 		let folder_contains_only_files = true
 
 		for (let key of Object.keys(tree)) {
@@ -41,7 +44,7 @@ export default class Model extends Observable {
 				folder_contains_only_files = false
 			}
 
-			const does_folder_contain_only_files = this.fUnpack(
+			const does_folder_contain_only_files = this.Destructurate(
 				node.children,
 				path + key + '/'
 			)

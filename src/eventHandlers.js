@@ -1,21 +1,25 @@
 import CreateElement from './utils/createElement'
 import ClearChildren from './utils/clearChildren'
+import { THUMBNAILS_PER_SLIDE } from './constants'
 
 // @brief: Class that contains all the event listeners (for clarity only)
 export default class EventHandler {
 	constructor(pView) {
 		this.mView = pView
+		this.mScroll = [0, 0]
 	}
 
-	initialise() {
-		this.fListenersForHeader()
-		this.fListenersForVideo(this.mView)
-		this.fListenersForSliders()
-		this.fListenersForThumbnails(this.mView)
-		this.fListenersForFileInfos()
+	Initialise(pPageLoader) {
+		this.mPageLoader = pPageLoader
+
+		this.ListenersForHeader()
+		this.ListenersForVideo(this.mView)
+		this.ListenersForSliders()
+		this.ListenersForThumbnails(this.mView)
+		this.ListenersForFileInfos()
 	}
 
-	fListenersForHeader() {
+	ListenersForHeader() {
 		const fHideSections = (pClassNameToHide, pClassNameToDisplay) => {
 			for (let section of document.getElementsByClassName(
 				pClassNameToDisplay
@@ -40,125 +44,49 @@ export default class EventHandler {
 		})
 	}
 
-	fListenersForVideo(pView) {
-		let viewer = pView.mViewer
+	ListenersForVideo(pView) {
 		let back_button = pView.mBackButton
 		let video = pView.mVideo
 		let time_out
 
 		// @brief: close the player when we click on the 'back' button
 		back_button.addEventListener('click', (event) => {
-			// Reduce the size of the player
+			// Hide the player
 
-			Object.assign(viewer.style, {
-				height: '0%',
-				width: '0%',
-				top: '50%',
-				left: '50%',
+			Object.assign(viewer.style, { display: 'none' })
+
+			if (!video.paused) {
+				video.pause()
+			}
+			// Notify server to stop the streaming
+			const video_progress = (
+				(video.currentTime / video.duration) *
+				100
+			).toFixed(2)
+
+			fetch(video.src + '/end/' + video_progress)
+
+			window.scrollTo({
+				left: this.mScroll[0],
+				top: this.mScroll[1],
+				behavior: 'smooth',
 			})
-
-			// Hide the text of the button
-			Object.assign(back_button.style, {
-				display: 'none',
-			})
-
-			fetch(video.src + '/end')
-
-			// Reset the button so it can be visible next time
-			// We use this weird code to hide the text because otherwise, if you
-			// click the button and move the mouse, it stays on the screen because
-			// moving the mouse in the player shows the button (see after).
-			setTimeout(() => {
-				Object.assign(back_button.style, {
-					color: 'transparent',
-					display: 'unset',
-					pointerEvents: 'none',
-				})
-				// We also pause the video if it is playing
-				// if (!video.paused) video.pause()
-				video.src = ''
-			}, 1000)
 		})
 
 		// @brief: Display controls and back button when the mouse moves in the video tag.
 		// Hide them after a time.
 		video.addEventListener('mousemove', (event) => {
 			video.removeAttribute('class')
-			back_button.style.pointerEvents = 'all'
-			back_button.style.color = 'white'
 
 			clearTimeout(time_out)
 
 			time_out = setTimeout(() => {
 				video.setAttribute('class', 'hide-controls')
-				back_button.style.color = 'transparent'
 			}, 3000)
-		})
-
-		// video.addEventListener('play', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('durationchange', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('ended', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('loadeddata', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('loadstart', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('progress', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('ratechange', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('seeked', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('seeking', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('suspend', (event) => {
-		// 	console.log(event)
-		// })
-		// video.addEventListener('waiting', (event) => {
-		// 	console.log(event)
-		// })
-
-		// Scroll back to the position after exiting fullscreen
-		let scroll = [0, 0]
-		video.addEventListener('loadstart', (event) => {
-			// https://stackoverflow.com/questions/2481350/how-to-get-scrollbar-position-with-javascript
-			const fGetScroll = () => {
-				if (window.pageYOffset !== undefined) {
-					return [pageXOffset, pageYOffset]
-				} else {
-					var sx,
-						sy,
-						doc = document.documentElement,
-						body = document.body
-					sx = doc.scrollLeft || body.scrollLeft || 0
-					sy = doc.scrollTop || body.scrollTop || 0
-					return [sx, sy]
-				}
-			}
-
-			scroll = fGetScroll()
-		})
-
-		video.addEventListener('webkitfullscreenchange', (event) => {
-			// Only applies on exit
-			if (document.fullscreen) return
-
-			window.scrollTo({ left: scroll[0], top: scroll[1], behavior: 'auto' })
 		})
 	}
 
-	fListenersForSliders() {
+	ListenersForSliders() {
 		let right_sliders = document.getElementsByClassName('right-slider')
 		let left_sliders = document.getElementsByClassName('left-slider')
 
@@ -208,27 +136,35 @@ export default class EventHandler {
 		}
 	}
 
-	fListenersForThumbnails(pView) {
+	ListenersForThumbnails(pView) {
 		let thumbnails = document.getElementsByClassName('thumbnail')
 
 		for (let thumbnail of thumbnails) {
 			const video_source = `${thumbnail.poster.replace('/thumbnail:', '')}`
+
 			const file_description = thumbnail.parentElement.getElementsByClassName(
 				'file-name'
 			)[0]
 
 			// Open and play the selected video on click
 			thumbnail.addEventListener('click', (event) => {
+				const video_source_without_hostsrc = video_source.replace(
+					/https*:\/\/[^/]+/,
+					''
+				)
+
 				const language = pView.mUserLanguage.selectedOptions[0].value
 
-				const viewer_style = {
-					height: '100%',
-					width: '100%',
-					top: '0%',
-					left: '0%',
-				}
+				this.mScroll = this._GetScroll()
+				window.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
 
-				Object.assign(pView.mViewer.style, viewer_style)
+				this.mPageLoader.mPageData.paths[video_source_without_hostsrc]
+
+				Object.assign(pView.mViewer.style, { display: 'flex' })
+
+				// Retrieve the file name to display it over the video
+				pView.mCurrentFileName.innerHTML =
+					thumbnail.parentElement.children[0].innerHTML
 
 				// Play back the video it it was the last one playing
 				if (pView.mVideo.src.includes(video_source))
@@ -240,7 +176,20 @@ export default class EventHandler {
 					pView.mVideo.src = `${video_source}/${language}`
 					pView.mVideo.poster = thumbnail.poster
 					pView.mVideo.load()
+					pView.mVideo.addEventListener(
+						'play',
+						(event) => {
+							if (thumbnail.time >= 0) {
+								const time_in_seconds =
+									(thumbnail.time / 100) * pView.mVideo.duration
+								console.log(pView.mVideo.duration, time_in_seconds)
+								pView.mVideo.currentTime = time_in_seconds
+							}
+						},
+						{ once: true }
+					)
 				}
+
 				// Play it after a little time
 				setTimeout(async () => {
 					ClearChildren(pView.mVideo)
@@ -305,13 +254,6 @@ export default class EventHandler {
 					pView.mVideo.play().catch((error) => {
 						console.log(error)
 					})
-
-					const { top, left } = pView.mVideo.getBoundingClientRect()
-
-					Object.assign(pView.mBackButton.style, {
-						top: top + 20 + 'px',
-						left: left + 20 + 'px',
-					})
 				}, 500)
 			})
 
@@ -346,7 +288,7 @@ export default class EventHandler {
 							thumbnail.muted = true
 							thumbnail.play()
 						})
-				}, 1500)
+				}, 1300)
 			})
 
 			thumbnail.addEventListener('mouseleave', (event) => {
@@ -372,33 +314,32 @@ export default class EventHandler {
 		}
 	}
 
-	fListenersForFileInfos() {
+	ListenersForFileInfos() {
 		const sections = document.getElementsByClassName('section')
 
+		const fToggleHover = (pSection) => {
+			const infos = pSection.getElementsByClassName('file-info')
+			return setTimeout(() => {
+				for (let info of infos) {
+					if (info.className.includes('file-info-hoverable')) continue
+					info.className = info.className.concat(' file-info-hoverable')
+				}
+			}, 1000)
+		}
+
+		// Enable/Disable hover effects when mouse enters/leaves the file area
 		for (let section of sections) {
 			let tHover = null
 
 			// Trigger hover effect on thumbnails 1 sec after the mouse enters in the carousels
 			section.addEventListener('mouseenter', (event) => {
 				if (tHover) clearTimeout(tHover)
-
-				const infos = section.getElementsByClassName('file-info')
-				tHover = setTimeout(() => {
-					for (let info of infos) {
-						info.className = 'file-info file-info-hoverable'
-					}
-				}, 1000)
+				tHover = fToggleHover(section)
 			})
 			// If the hover is not trigger already, then it triggers it on 'over'
 			section.addEventListener('mouseover', (event) => {
 				if (tHover) clearTimeout(tHover)
-
-				const infos = section.getElementsByClassName('file-info')
-				tHover = setTimeout(() => {
-					for (let info of infos) {
-						info.className = 'file-info file-info-hoverable'
-					}
-				}, 1000)
+				tHover = fToggleHover(section)
 			})
 			// Remove the effect when leaving the carousel
 			section.addEventListener('mouseleave', (event) => {
@@ -407,9 +348,123 @@ export default class EventHandler {
 				const infos = section.getElementsByClassName('file-info-hoverable')
 				while (infos.length) {
 					let info = infos[0]
-					info.className = 'file-info'
+					info.className = info.className.replace(' file-info-hoverable', '')
 				}
 			})
+		}
+
+		const GetStyleFromPosition = (pPosition, pOtherPosition, pOffset) => {
+			let style = {
+				cursor: 'pointer',
+			}
+
+			if (pPosition == 0) {
+				style.left =
+					(pPosition == pOtherPosition ? pOffset : 2 * pOffset) + 'px'
+				if (pOtherPosition == THUMBNAILS_PER_SLIDE - 1) {
+					style.zIndex = 2
+				}
+			} else if (pPosition == THUMBNAILS_PER_SLIDE - 1) {
+				style.left =
+					(pPosition == pOtherPosition ? -pOffset : -2 * pOffset) + 'px'
+				if (pOtherPosition == 0) {
+					style.zIndex = 2
+				}
+			} else {
+				if (pOtherPosition < pPosition) {
+					style.left = '0px'
+				} else if (pOtherPosition > pPosition) {
+					style.left = 2 * pOffset + 'px'
+				} else {
+					style.left = pOffset + 'px'
+				}
+
+				if (pOtherPosition == 0 || pOtherPosition == THUMBNAILS_PER_SLIDE - 1) {
+					style.zIndex = 2
+				}
+			}
+
+			return style
+		}
+
+		const infos = document.getElementsByClassName('file-info')
+		let tResendEvent = null
+		for (let info of infos) {
+			info.addEventListener('mouseover', (event) => {
+				// Delay the effect when entering in the new file area
+				if (!info.className.includes('file-info-hoverable')) {
+					if (tResendEvent) clearTimeout(tResendEvent)
+					tResendEvent = setTimeout(() => {
+						info.dispatchEvent(new Event('mouseover'))
+					}, 100)
+					return
+				}
+				const parent = info.parentElement
+				const position = info.className.replace(
+					/carousel-item-([0-9]+) .*/,
+					'$1'
+				)
+
+				// 4 because it works
+				const offset = info.clientWidth / 4
+
+				for (let other_info of parent.getElementsByClassName('file-info')) {
+					const other_position = other_info.className.replace(
+						/carousel-item-([0-9]+) .*/,
+						'$1'
+					)
+
+					let style = GetStyleFromPosition(position, other_position, offset)
+
+					// Change the scale of the hovered item
+					if (other_position === position) style.transform = 'scale(1.5)'
+
+					Object.assign(other_info.style, style)
+				}
+			})
+
+			info.addEventListener('mouseleave', (event) => {
+				if (tResendEvent) clearTimeout(tResendEvent)
+				const parent = info.parentElement
+				const position = info.className.replace(
+					/carousel-item-([0-9]+) .*/,
+					'$1'
+				)
+				for (let other_info of parent.getElementsByClassName('file-info')) {
+					const other_position = other_info.className.replace(
+						/carousel-item-([0-9]+) .*/,
+						'$1'
+					)
+
+					let style = {
+						left: '0px',
+						cursor: 'default',
+						zIndex: 1,
+					}
+
+					// Change the scale of the hovered item
+					if (other_position === position) style.transform = 'scale(1)'
+
+					Object.assign(other_info.style, style)
+				}
+			})
+		}
+	}
+
+	// https://stackoverLow.com/questions/2481350/how-to-get-scrollbar-position-with-javascript
+	_GetScroll() {
+		if (window.pageYOffset !== undefined) {
+			console.log('Offset: ', [pageXOffset, pageYOffset])
+			return [pageXOffset, pageYOffset]
+		} else {
+			var sx,
+				sy,
+				doc = document.documentElement,
+				body = document.body
+			sx = doc.scrollLeft || body.scrollLeft || 0
+			sy = doc.scrollTop || body.scrollTop || 0
+			console.log('Offset: ', [sx, sy])
+			return [sx, sy]
 		}
 	}
 }

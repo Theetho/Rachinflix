@@ -39,6 +39,10 @@ class Logger {
 	NewLine() {
 		console.log('')
 	}
+	SameLine() {
+		process.stdout.write(clc.move.up(1))
+		process.stdout.write(clc.erase.line)
+	}
 	Start(label) {
 		console.time(label)
 	}
@@ -48,29 +52,28 @@ class Logger {
 	Stop(label) {
 		console.timeEnd(label)
 	}
-	Debug(message) {
-		this._Log(DEBUG, message)
+	Debug(message, ...optionalParams) {
+		this._Log(DEBUG, console.log, message, optionalParams)
 	}
-	Info(message) {
-		this._Log(INFO, message)
+	Info(message, ...optionalParams) {
+		this._Log(INFO, console.log, message, optionalParams)
 	}
-	Warn(message) {
-		this._Log(WARN, message)
+	Warn(message, ...optionalParams) {
+		this._Log(WARN, console.log, message, optionalParams)
 	}
-	Error(message) {
-		this._Trace(ERROR, message)
+	Error(message, ...optionalParams) {
+		this._Trace(ERROR, console.log, message, optionalParams)
 	}
 	Progress(percent) {
 		if (this._progressing) {
-			process.stdout.write(clc.move.up(1))
-			process.stdout.write(clc.erase.line)
+			this.SameLine()
 		}
 		console.log(clc.xterm(7)(`Processing: ${percent}%`))
 
 		this._progressing = true
 	}
 
-	_Log(state, messages, log = console.log) {
+	_Log(state, logger, messages, ...optionalParams) {
 		if (this._level < state.level) return
 
 		if (!Array.isArray(messages)) {
@@ -79,14 +82,14 @@ class Logger {
 
 		for (let index in messages) {
 			const message = messages[index]
-			log(state.color(state.prefixe + message))
+			logger(state.color(state.prefixe + message + optionalParams))
 		}
 
 		this._progressing = false
 	}
 
-	_Trace(state, messages) {
-		this._Log(state, messages, console.trace)
+	_Trace(state, messages, ...optionalParams) {
+		this._Log(state, console.trace, messages, optionalParams)
 	}
 }
 

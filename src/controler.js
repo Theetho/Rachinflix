@@ -10,13 +10,13 @@ export default class Controler {
 		this.mEventHandler = new EventHandler(this.mView)
 		this.mPageLoader = new PageLoader(this.mView)
 
-		this.initialize()
+		this.Initialize()
 	}
 
-	async initialize() {
+	async Initialize() {		
 		this.mModel.AddObserver(this.mPageLoader)
 
-		await this.mModel.initialise()
-		this.mEventHandler.initialise()
+		await this.mModel.Initialise()
+		this.mEventHandler.Initialise(this.mPageLoader)
 	}
 }
