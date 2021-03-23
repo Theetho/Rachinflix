@@ -1,0 +1,63 @@
+{
+  "name": "rachinflix-vue",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon server.js",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "extract": "node src/extracter/extractData.js",
+    "newfiles": "node src/bdd/interface/Serveur.js"
+  },
+  "dependencies": {
+    "cli-color": "^2.0.0",
+    "core-js": "^3.6.5",
+    "cors": "^2.8.5",
+    "express-session": "^1.17.1",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-probe": "^1.0.6",
+    "fluent-ffmpeg": "^2.1.2",
+    "node-fetch": "^2.6.1",
+    "node-json-db": "^1.1.0",
+    "nodemon": "^2.0.4",
+    "systeminformation": "^4.32.0",
+    "uuid": "^8.3.2",
+    "vue": "^2.6.12",
+    "vue-carousel-3d": "^1.0.1",
+    "vue-cookies": "^1.7.4",
+    "vuex": "^3.6.0",
+    "ytdl-core": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.7",
+    "@vue/cli-plugin-eslint": "^4.5.7",
+    "@vue/cli-service": "^4.5.7",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "nodemonConfig": {
+    "ext": "js"
+  }
+}

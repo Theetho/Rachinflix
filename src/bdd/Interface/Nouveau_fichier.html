@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajout de nouveaux fichiers</title>
+    <script type="text/javascript" src="/nouveau_fichier_js" defer></script>
+    <link rel="stylesheet" href="/style" />
+  </head>
+  <body>
+    <button id="scanner">Lancer le scan</button>
+    <div id="aucun-fichier" style="display: none;">Aucun nouveau fichier trouvé.</div>
+    <div id="spinner" style="display: none;">
+      <div class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div id="recherche-en-cours">Recherche en cours</div>
+    </div>
+    <div id="contenu" style="display: none;">
+      <div id="zone-titre">
+        <button id="precedent" style="display: initial;">Précédent</button>
+        <div id="titre"></div>
+        <button id="suivant" style="display: initial;">Suivant</button>
+      </div>
+      <div id="langue"></div>
+      <div id="zone-centrale">
+        <div id="zone-miniature">
+          <button id="miniature-precedente">◂</button>
+          <img id="miniature" src="" alt="" />
+
+          <button id="miniature-suivante">▸</button>
+        </div>
+        <div id="zone-trailer">
+          <button id="trailer-precedent">◂</button>
+          <iframe
+            id="trailer"
+            width="560"
+            height="315"
+            src=""
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <button id="trailer-suivant">▸</button>
+        </div>
+      </div>
+      <div id="synopsis"></div>
+      <button id="valider">Valider</button>
+    </div>
+  </body>
+</html>
