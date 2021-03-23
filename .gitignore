@@ -4,7 +4,9 @@ node_modules
 /private/streams
 /private/scripts
 *.lnk
-
+*.mkv
+*.jpg
+*.vtt
 
 # local env files
 .env.local
