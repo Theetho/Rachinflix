@@ -1,0 +1,139 @@
+@font-face {
+  font-family: operatormono;
+  src: url(./fonts/OperatorMono-Medium.otf);
+}
+@font-face {
+  font-family: operatormonolight;
+  src: url(./fonts/OperatorMono-Light.otf);
+}
+@font-face {
+  font-family: operatormonobold;
+  src: url(./fonts/OperatorMono-Bold.otf);
+}
+@font-face {
+  font-family: operatormonoitalic;
+  src: url(./fonts/OperatorMono-MediumItalic.otf);
+}
+@font-face {
+  font-family: operatormonolightitalic;
+  src: url(./fonts/OperatorMono-LightItalic.otf);
+}
+@font-face {
+  font-family: operatormonobolditalic;
+  src: url(./fonts/OperatorMono-BoldItalic.otf);
+}
+::-webkit-scrollbar {
+  background-color: black;
+  width: 1vw;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(40, 40, 40);
+  width: 1vw;
+}
+::cue {
+  background-color: transparent;
+}
+video {
+  outline: none;
+}
+img {
+  outline: none;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+  outline: 0;
+}
+a:visited {
+  color: inherit;
+}
+/* From netflix */
+select {
+  outline: 0;
+  height: 2.5rem;
+  margin-left: 2%;
+  padding-left: 10px;
+  line-height: 2.5rem;
+  letter-spacing: 1px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  display: inline-block;
+  color: #fff;
+  background-color: #000;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  position: relative;
+  padding-right: 10px;
+}
+body {
+  margin: 0;
+  color: #ddd;
+  background-color: #141414;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 99vw;
+}
+#root {
+  position: relative;
+  width: 100%;
+  #rachinflix-body {
+    position: relative;
+    width: 100%;
+    padding-top: 2em;
+  }
+}
+.blur-background .item:not(.unblur) {
+  filter: grayscale(100%);
+}
+#container-authenticated {
+  margin-top: 5%;
+}
+#root .MuiSkeleton-root.custom-skeleton {
+  transform: scale(1);
+}
+
+@media screen and (min-width: 1250px) {
+  body {
+    font-size: 12pt;
+  }
+}
+@media screen and (max-width: 1249px) {
+  body {
+    font-size: 8pt;
+  }
+}
+.has-no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  &::-webkit-scrollbar-thumb {
+    display: none;
+  }
+}
+.no-scroll {
+  overflow-y: hidden;
+  margin-right: 1vw;
+}
+@keyframes glow {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}

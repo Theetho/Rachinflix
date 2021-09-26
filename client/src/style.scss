@@ -1,0 +1,31 @@
+@import url('http://fonts.cdnfonts.com/css/aquiline');
+@import url('http://fonts.cdnfonts.com/css/freebooter-script');
+@import url('https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap');
+
+:root {
+  --WHITE: #fff;
+  --BLACK: #000;
+  --LIGHT_GREY: #d8d8d8;
+  --GREY: #a5a5a5;
+  --DARK_BLUE: #25465f;
+  --LIGHT_BLUE: #109db9;
+  --RED: #fe1414;
+  --LIGHT_RED: #fe544b;
+  --DARK_GREEN: #009060;
+  --LIGHT_GREEN: #3fa846;
+  --LIGHT_YELLOW: #fdee00;
+  --LIGHT_ORANGE: #f39b28;
+  --BG_PRIMARY: #060818;
+  --BG_SECONDARY: #0e1726;
+  --SHELVES: rgb(218, 219, 211);
+}
+
+#root .MuiSkeleton-root {
+  background-color: rgba(255, 255, 255, 0.11);
+}
+
+@for $percent from 0 through 10 {
+  .w-#{$percent} {
+    width: 10% * $percent !important;
+  }
+}

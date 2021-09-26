@@ -1,0 +1,135 @@
+#file-browser {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 998;
+  background-color: rgba($color: #000000, $alpha: 0.5);
+  .content {
+    position: absolute;
+    background-color: #181818;
+    width: 60%;
+    height: 90%;
+    left: 20%;
+    top: 10%;
+    font-size: 16pt;
+    overflow-y: scroll;
+    > div:last-child {
+      margin-bottom: 5em;
+    }
+    .trailer-area {
+      position: relative;
+      width: 100%;
+      video {
+        width: 100%;
+        position: relative;
+      }
+      .video-filter {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        background: linear-gradient(0deg, #181818, transparent 50%);
+      }
+    }
+  }
+}
+
+.file-browser-play-now {
+  position: absolute;
+  min-width: 15%;
+  left: 10%;
+  bottom: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  font-weight: bold;
+  z-index: 1;
+  padding: 0.8em 0.3em !important;
+  .icon {
+    transform: scale(2) rotate(0deg);
+    transition: 0.25s all;
+  }
+  &:hover {
+    .icon {
+      transform: scale(2) rotate(90deg);
+    }
+  }
+}
+/* from https://bulma.io/documentation/components/modal/ */
+.modal-close {
+  height: 32px;
+  max-height: 32px;
+  max-width: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  width: 32px;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-block;
+  background-color: rgba($color: #000000, $alpha: 0.3);
+  outline: 0;
+  z-index: 1;
+  &::before {
+    height: 2px;
+    width: 50%;
+  }
+  &::after {
+    height: 50%;
+    width: 2px;
+  }
+  &::before,
+  &::after {
+    background-color: #fff;
+    content: '';
+    display: block;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+    transform-origin: center center;
+  }
+}
+.file-browser-first-row {
+  margin: 2vh 0;
+  width: 100%;
+  position: relative;
+}
+#file-browser-title {
+  margin-left: 5%;
+}
+#file-browser-date {
+  color: #555;
+  margin-left: 5%;
+  font-style: italic;
+}
+#file-browser-genres {
+  font-size: 12pt;
+  position: absolute;
+  right: 5%;
+}
+#file-browser-genres::before {
+  content: 'Genres: ';
+  color: #555;
+}
+#file-browser-overview {
+  width: 80%;
+  position: relative;
+  left: 5%;
+  font-size: 12pt;
+}
+#file-browser-episodes {
+  position: relative;
+  width: 90%;
+  left: 5%;
+}
+#file-browser-episodes-header {
+  border-bottom: 1px solid #555;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}

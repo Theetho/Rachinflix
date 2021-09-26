@@ -1,0 +1,27 @@
+.user-slot {
+  text-align: center;
+  color: grey;
+  font-size: 20pt;
+  display: flex;
+  flex-direction: column;
+  margin: 0 0.5em;
+  &:hover {
+    .user-icon {
+      border: 2px solid white;
+    }
+    color: white;
+  }
+  .user-icon {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 130px;
+    min-height: 130px;
+    border: 2px solid black;
+    &::after {
+      content: '+';
+      font-size: 48pt;
+    }
+  }
+}

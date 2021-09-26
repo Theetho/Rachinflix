@@ -1,0 +1,82 @@
+{
+  "name": "client",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "@agney/react-loading": "^0.1.2",
+    "@material-ui/types": "^5.1.0",
+    "@types/axios": "^0.14.0",
+    "@types/classnames": "^2.2.11",
+    "@types/node": "^14.14.32",
+    "@types/react": "^16.14.5",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-lazy-load-image-component": "^1.5.2",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/uuid": "^8.3.1",
+    "@typescript-eslint/parser": "^2.34.0",
+    "customize-cra": "^1.0.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.5",
+    "eslint": "^6.8.0",
+    "ncu": "^0.2.1",
+    "node-sass": "^4.14.1",
+    "prettier": "^2.1.2",
+    "react-app-rewired": "^2.1.6",
+    "react-scripts": "^3.4.3",
+    "react-test-renderer": "^16.13.1",
+    "rimraf": "^3.0.2",
+    "sonar-scanner": "^3.1.0",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
+    "@types/fbemitter": "^2.0.32",
+    "@types/react-router": "^5.1.13",
+    "axios": "^0.21.1",
+    "classnames": "^2.3.1",
+    "core-js": "^3.6.5",
+    "fbemitter": "^3.0.0",
+    "file-saver": "^2.0.5",
+    "mobx": "^6.1.8",
+    "mobx-react": "^7.1.0",
+    "moment": "^2.29.1",
+    "nanoid": "^3.1.12",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-flatpickr": "^3.10.7",
+    "react-helmet": "^6.1.0",
+    "react-lazy-load-image-component": "^1.5.1",
+    "react-page-layout": "^0.9.8",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "universal-cookie": "^4.0.4",
+    "urlcat": "^2.0.4",
+    "uuid": "^8.3.2"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "rimraf build && react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {}
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

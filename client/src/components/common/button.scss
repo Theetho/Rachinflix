@@ -1,0 +1,129 @@
+.button {
+  transition: background-color 0.2s, text-decoration 0.5s;
+  text-align: center;
+  width: max-content;
+  cursor: pointer;
+}
+.button > div {
+  position: relative;
+  border: 2px solid;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > .icon {
+    margin-right: 0.5rem;
+  }
+}
+
+$animate: all 0.2s ease-in-out;
+
+@mixin variations($args...) {
+  @each $name, $color in keywords($args) {
+    .button.is-#{$name} {
+      > div {
+        color: var($color);
+        background-color: var(--WHITE);
+        border-color: var(--WHITE);
+      }
+      &.inverted {
+        > div {
+          color: var(--WHITE);
+          background-color: var($color);
+          border-color: var($color);
+        }
+      }
+    }
+    .button.is-#{$name} {
+      > div:hover {
+        color: var(--WHITE);
+        background-color: var($color);
+        border-color: var($color);
+      }
+      &.inverted {
+        > div:hover {
+          color: var($color);
+          background-color: var(--WHITE);
+          border-color: var(--WHITE);
+        }
+      }
+    }
+
+    .button.is-#{$name} {
+      > span {
+        color: var($color);
+      }
+      &.inverted {
+        > span {
+          color: var(--WHITE);
+        }
+      }
+    }
+
+    // inspired from https://speckyboy.com/underline-text-effects-css/ / 5. Animation Styles
+    .button.is-#{$name} {
+      > span {
+        padding: 0;
+        &::before {
+          height: 2px;
+        }
+      }
+      > div {
+        &::before {
+          height: 100%;
+        }
+      }
+      > span,
+      > div {
+        text-align: center;
+        margin: 0 auto;
+        transition: $animate;
+        &:before {
+          content: '';
+          position: absolute;
+          bottom: 0px;
+          width: 0px;
+          margin: 5px 0 0;
+          transition: $animate;
+          transition-duration: 0.25s;
+          opacity: 0;
+          background-color: var($color);
+          left: 0;
+          z-index: -1;
+        }
+      }
+      &.inverted {
+        > span,
+        > div {
+          &:before {
+            background-color: var(--WHITE);
+          }
+        }
+      }
+      &:hover {
+        cursor: pointer;
+        > span,
+        > div {
+          &:before {
+            width: 100%;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include variations(
+  $primary: --LIGHT_BLUE,
+  $secondary: --RED,
+  $tertiary: --DARK_BLUE,
+  $quaternary: --DARK_GREEN,
+  $quinary: --LIGHT_GREEN,
+  $senary: --LIGHT_YELLOW,
+  $septenary: --LIGHT_ORANGE,
+  $octonary: --BLACK,
+  $nonary: --LIGHT_GREY,
+  $denary: --GREY
+);

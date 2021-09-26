@@ -1,0 +1,44 @@
+.controls-volume {
+  &.hovered {
+    position: relative;
+    .volume-handler {
+      width: 5em;
+      .circle-container {
+        opacity: 1 !important;
+      }
+    }
+  }
+  .volume-handler {
+    position: relative;
+    height: 100%;
+    left: 0.5em;
+    width: 0em;
+    transition: width 0.15s;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    display: flex;
+
+    .volume-total {
+      width: 85%;
+      height: 5px;
+      position: absolute;
+      background-color: #888;
+    }
+    .volume-current {
+      height: 100%;
+      position: absolute;
+      background-color: red;
+      .circle-container {
+        top: -5px;
+        opacity: 0;
+        transition: 0.15s;
+
+        .circle-button {
+          width: 15px;
+          height: 15px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+#header {
+  position: fixed;
+  width: 100vw;
+  height: 7.5%;
+  top: 0;
+  background-color: black;
+  z-index: 998;
+  font-size: 1em;
+  font-family: operatormono;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+}
+
+#header-left,
+#header-right {
+  position: relative;
+  width: 33%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+#header-search-menu {
+  position: relative;
+  cursor: pointer;
+}
+#header-search-menu:hover {
+  color: #bbb;
+}
+#header-logo {
+  position: relative;
+  margin: 0 15% 0 20%;
+  height: 70%;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 1250px) {
+  #header-search-menu {
+    left: 1%;
+  }
+}
+@media screen and (max-width: 1249px) {
+  #header-search-menu {
+    left: 10%;
+    transform: scale(1.5);
+  }
+}

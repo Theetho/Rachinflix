@@ -1,0 +1,58 @@
+.vertical-carousel {
+  position: relative;
+  height: 25vw;
+  width: 85%;
+  left: 7.5%;
+  .carousel-title {
+    // position: absolute;
+    top: -0.5em;
+    margin-bottom: 0;
+  }
+  .profile-section {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    .profile-backdrop {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      // background-color: rgba(0, 0, 0, 0.8);
+      .profile-current {
+        position: relative;
+        width: 60%;
+        height: 90%;
+        left: 35%;
+        top: 5%;
+        h3 {
+          color: red;
+          span {
+            color: white;
+            font-size: 0.8em;
+            font-weight: 200;
+            font-style: italic;
+          }
+        }
+        > div:last-child {
+          display: flex;
+          .button {
+            margin-right: 1em;
+          }
+          .button:first-child {
+            .icon {
+              transform: scale(2) rotate(0deg);
+              transition: 0.25s all;
+            }
+            &:hover {
+              .icon {
+                transform: scale(2) rotate(90deg);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

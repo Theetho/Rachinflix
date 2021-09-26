@@ -1,0 +1,92 @@
+.icon {
+  height: 24px;
+  width: 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  &.is-small {
+    transform: scale(1);
+    &.is-growing:hover {
+      transform: scale(1.2);
+    }
+    &.is-shrinking:hover {
+      transform: scale(0.8);
+    }
+  }
+  &.is-medium {
+    transform: scale(2);
+    &.is-growing:hover {
+      transform: scale(2.4);
+    }
+    &.is-shrinking:hover {
+      transform: scale(1.6);
+    }
+  }
+  &.is-big {
+    transform: scale(3);
+    &.is-growing:hover {
+      transform: scale(3.6);
+    }
+    &.is-shrinking:hover {
+      transform: scale(2.4);
+    }
+  }
+  &.is-huge {
+    transform: scale(4);
+    &.is-growing:hover {
+      transform: scale(4.8);
+    }
+    &.is-shrinking:hover {
+      transform: scale(3.2);
+    }
+  }
+}
+$fadeduration: 0.2s;
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+    display: flex;
+  }
+  99% {
+    opacity: 0.01;
+    display: flex;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+  }
+}
+.fade-out {
+  animation: fadeout $fadeduration;
+  opacity: 0;
+  display: none;
+}
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    display: none;
+  }
+  1% {
+    opacity: 0.01;
+    display: flex;
+  }
+  100% {
+    opacity: 1;
+    display: flex;
+  }
+}
+.fade-in {
+  animation: fadein $fadeduration;
+  opacity: 1;
+  display: flex;
+}

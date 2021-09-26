@@ -1,0 +1,46 @@
+.profile-section {
+  .slider {
+    position: absolute;
+    height: fit-content;
+    width: 22%;
+    height: 10%;
+    left: 5%;
+    transition: all 0.25s ease-in-out;
+    > .icon {
+      display: unset;
+      color: white;
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+  }
+  .up-slider {
+    top: 0;
+  }
+  .down-slider {
+    bottom: 0;
+  }
+  .profile-items {
+    position: relative;
+    height: 100%;
+    width: 20%;
+    left: 5%;
+    .profile-item {
+      border-radius: 5px;
+      height: 35%;
+      width: 100%;
+      margin: 12.5% 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: flex-end;
+      padding: 5%;
+      .content {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 50%;
+      }
+    }
+  }
+}

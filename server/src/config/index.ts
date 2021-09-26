@@ -1,0 +1,10 @@
+export const ROOT_PROJECT = `D:/rachinflix-v2.0.0/server`
+export const ROOT_FILES = `E:/Site`
+export const ROOT_SPRITES = `${ROOT_PROJECT}/private/users/sprites`
+export const ROOT_STREAMS = `${ROOT_PROJECT}/private/streams`
+export const ROOT_USERS = `${ROOT_PROJECT}/private/users`
+export const ROOT_SUBTITLES = `${ROOT_PROJECT}/public/subtitles`
+export const ROOT_THUMBNAILS = `${ROOT_PROJECT}/public/thumbnails`
+export const ROOT_BACKDROPS = `${ROOT_PROJECT}/public/backdrops`
+export const ROOT_TRAILERS = `${ROOT_PROJECT}/public/trailers`
+export const ROOT_DATABASE = `${ROOT_PROJECT}/database`

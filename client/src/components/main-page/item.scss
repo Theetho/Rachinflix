@@ -1,0 +1,80 @@
+.item {
+  position: relative;
+  margin: 0 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  .item-bottom,
+  .item-top {
+    height: 15%;
+    opacity: 0;
+    transition: opacity 500ms;
+  }
+  &:hover {
+    .item-bottom,
+    .item-top {
+      opacity: 1;
+    }
+  }
+}
+
+.item-thumbnail {
+  width: 100%;
+}
+
+$gradient-dark: rgba(0, 0, 0, 1);
+$gradient-light: rgba(0, 0, 0, 0.6);
+$gradient-lighter: rgba(0, 0, 0, 0);
+@each $side,
+  $gradient
+    in (
+      'top': linear-gradient($gradient-dark, $gradient-light 75%, $gradient-lighter),
+      'bottom': linear-gradient($gradient-lighter, $gradient-light 10%, $gradient-dark)
+    )
+{
+  .item-#{$side} {
+    position: absolute;
+    #{$side}: 0;
+    width: 100%;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial,
+      sans-serif;
+    font-weight: bold;
+    font-size: 0.7em;
+    background: #{$gradient};
+    cursor: default;
+  }
+}
+
+.item-infos {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+.item-icons {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1em;
+  > span {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: fit-content;
+    padding: 0.2rem 1em 0.2rem 0;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  > * {
+    cursor: pointer;
+  }
+  .icon-play {
+    transform: scale(1.2);
+  }
+}

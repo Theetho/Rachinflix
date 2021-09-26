@@ -1,0 +1,32 @@
+.accordion {
+  width: 100%;
+  > .accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    width: 95%;
+    font-size: 105%;
+    &:hover {
+      color: var(--RED);
+    }
+  }
+  > .accordion-content {
+    max-height: 0;
+    overflow-y: hidden;
+    position: relative;
+    left: 5%;
+    width: 95%;
+    font-size: 95%;
+    line-height: 1.3rem;
+  }
+  &.extended {
+    > .accordion-content {
+      overflow-y: visible;
+      max-height: max-content;
+    }
+    > .accordion-header {
+      color: var(--RED);
+    }
+  }
+}

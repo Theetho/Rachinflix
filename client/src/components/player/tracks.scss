@@ -1,0 +1,74 @@
+.player-tracks {
+  position: relative;
+  > #player-tracks-container {
+    min-width: 30vw;
+    min-height: 30vh;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    color: transparent;
+    transition: all 0.3s;
+    overflow: hidden;
+    > div:first-child {
+      border-right: none;
+    }
+    li {
+      &.selected {
+        color: transparent;
+      }
+    }
+  }
+  &.toggled > #player-tracks-container {
+    opacity: 1;
+    pointer-events: initial;
+    padding: 1em;
+    color: var(--WHITE);
+    > div:first-child {
+      border-right: 1px solid #888;
+    }
+    li {
+      color: #888;
+      &:hover,
+      &.selected {
+        color: var(--WHITE);
+      }
+    }
+  }
+
+  #player-tracks-container {
+    border-radius: 5px;
+    position: absolute;
+    background-color: #141414;
+    // min-height: 30vh;
+    bottom: 0;
+    // min-width: 30vw;
+    right: 0%;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1;
+
+    cursor: default;
+    > div {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      > ul {
+        align-self: flex-start;
+        list-style: none;
+        > li {
+          margin: 0.5em 0;
+          cursor: pointer;
+          &.selected {
+            &::after {
+              content: '\2713';
+              position: absolute;
+              right: 2em;
+            }
+          }
+        }
+      }
+    }
+  }
+}

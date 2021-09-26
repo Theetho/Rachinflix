@@ -1,0 +1,22 @@
+{
+  "name": "rachinflix",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./server/build/main.js",
+    "start:dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "start:dev:front": "concurrently \"npm run server:dev:front\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run start:dev",
+    "server:dev:front": "cd server && npm run start",
+    "client:dev": "cd client && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^6.0.0"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,187 @@
+#management-page {
+  height: 90vh;
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  .management-media {
+    width: 80%;
+    display: flex;
+    .slider {
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 3em;
+      .icon {
+        cursor: pointer;
+      }
+    }
+    h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+  }
+  .button {
+    width: 10em;
+    height: 3em;
+    font-size: 1.5em;
+  }
+  > *:not(.button) {
+    margin-bottom: 3em;
+  }
+  .titles-overviews {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    > div {
+      margin: 0 2em;
+      > h3 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+  .missing-fields {
+    color: red;
+  }
+  .video-selector,
+  .image-selector {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+  }
+  .video-selector {
+    .main-video {
+      position: relative;
+      > div {
+        position: absolute;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+  .image-selector {
+    cursor: pointer;
+    .backdrops {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: auto;
+      img {
+        width: 100%;
+      }
+      .image {
+        position: relative;
+        margin: 3px;
+        &.selected {
+          > .selected-language {
+            opacity: 1;
+          }
+        }
+        > div {
+          position: absolute;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          &.selected-language {
+            opacity: 0;
+            height: 100%;
+            width: 100%;
+            text-transform: uppercase;
+            font-size: 22pt;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+          }
+        }
+      }
+    }
+    .posters {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: auto;
+      img {
+        width: 100%;
+      }
+      .image {
+        position: relative;
+        margin: 3px;
+        &.selected {
+          > .selected-language {
+            opacity: 1;
+          }
+        }
+        > div {
+          position: absolute;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          &.selected-language {
+            opacity: 0;
+            height: 100%;
+            width: 100%;
+            text-transform: uppercase;
+            font-size: 22pt;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+          }
+        }
+      }
+    }
+  }
+  .video-selector {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    .trailer {
+      margin: 0.25em;
+      position: relative;
+      border: 1px solid #ddd;
+      &.selected {
+        .video > div.selected-language {
+          opacity: 1;
+        }
+      }
+      .video {
+        iframe {
+          border: none;
+        }
+        > div {
+          position: absolute;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          &.selected-language {
+            opacity: 0;
+            height: 100%;
+            width: 100%;
+            text-transform: uppercase;
+            font-size: 22pt;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+          }
+        }
+      }
+      .trailer-selector {
+        cursor: pointer;
+        position: relative;
+        width: 100%;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+    }
+  }
+}
