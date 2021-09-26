@@ -1,1 +1,13 @@
 ﻿node_modules
+server/public
+server/private
+server/database
+server/build
+server/scripts
+client/src/fonts
+.vs
+client/package-lock.json
+server/api.txt
+server/module.cmd
+server/package-lock.json
+package-lock.json
