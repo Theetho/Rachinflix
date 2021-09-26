@@ -4,7 +4,7 @@ import * as request from 'request'
 import { ROOT_BACKDROPS, ROOT_THUMBNAILS } from 'src/config'
 import { createEmptyFile } from 'src/helpers/file'
 
-export async function downloadFilmBackdrop(
+export async function downloadBackdrop(
   backdropUri: string | undefined,
   localPath: string,
   logger: Logger
@@ -20,9 +20,6 @@ export async function downloadFilmBackdrop(
     request.head(backdropUri, function (err, res, body) {
       request(backdropUri)
         .pipe(fs.createWriteStream(path))
-        .on('open', () => {
-          logger.log(`Downloading the backdrop in ${localPath}...`)
-        })
         .on('close', () => {
           logger.log(`Downloaded the backdrop in ${localPath}`)
           resolve(localPath)
@@ -31,7 +28,7 @@ export async function downloadFilmBackdrop(
   })
 }
 
-export async function downloadFilmPoster(
+export async function downloadPoster(
   posterUri: string | undefined,
   localPath: string,
   logger: Logger
@@ -47,9 +44,6 @@ export async function downloadFilmPoster(
     request.head(posterUri, function (err, res, body) {
       request(posterUri)
         .pipe(fs.createWriteStream(path))
-        .on('open', () => {
-          logger.log(`Downloading the poster in ${localPath}...`)
-        })
         .on('close', () => {
           logger.log(`Downloaded the poster in ${localPath}`)
           resolve(localPath)

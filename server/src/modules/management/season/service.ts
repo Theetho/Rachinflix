@@ -4,7 +4,14 @@ import { Repositories } from 'src/helpers/repository'
 import { sortByNumber } from 'src/helpers/sort'
 import { Season } from 'src/interface'
 import { NewMedia, Research, Result } from 'src/interface/common/management'
-import { ROOT_IMAGES_TMDB_500, ROOT_IMAGES_TMDB_ORIGINAL } from 'src/tmdb/config'
+import { downloadBackdrop, downloadPoster } from 'src/management/image'
+import { downloadTrailer } from 'src/management/video'
+import {
+  ROOT_IMAGES_TMDB_500,
+  ROOT_IMAGES_TMDB_ORIGINAL,
+  ROOT_YTDL,
+  ROOT_YTEMBED
+} from 'src/tmdb/config'
 import { TMDBSeason } from 'src/tmdb/interface'
 import { From3166To639, SupportedLanguages_3166, SupportedLanguages_639 } from 'src/tmdb/language'
 import { getSeasonDetails } from 'src/tmdb/season'
@@ -77,7 +84,7 @@ export class SeasonManagementService extends UseLogger {
 
     result.posters.push(posters.map(image => `${ROOT_IMAGES_TMDB_500}${image.file_path}`))
     result.backdrops.push(backdrops.map(image => `${ROOT_IMAGES_TMDB_ORIGINAL}${image.file_path}`))
-    result.trailers.push(trailers.map(video => `https://www.youtube.com/embed/${video.key}`))
+    result.trailers.push(trailers.map(video => `${ROOT_YTEMBED}${video.key}`))
 
     return result
   }
@@ -108,13 +115,16 @@ export class SeasonManagementService extends UseLogger {
     const season: Season = {
       id,
       number: seasonNumber,
-      average_vote: 10, //serie.average_vote,
-      release_date: '01/01/1970', //serie.release_date,
+      average_vote: serie.average_vote,
+      release_date: TMDBSeasons[0].air_date
+        .split('-')
+        .reverse()
+        .join('/') as `${number}/${number}/${number}`,
       tmdb_id: body.tmdb_id,
-      vote_count: 10, //serie.vote_count,
+      vote_count: serie.vote_count,
       episode_count: 0,
       episodes: [],
-      backdrop: path.concat('.jpg'), //body.backdrop,
+      backdrop: await downloadBackdrop(body.backdrop, path.concat('.jpg'), this.logger), //body.backdrop,
       path
     }
 
@@ -122,17 +132,23 @@ export class SeasonManagementService extends UseLogger {
       const language = SupportedLanguages_3166[index]
       season[language] = {
         overview: TMDBSeasons[index].overview,
-        poster: path.concat(`/Poster_${language}.jpg`), //body.posters[language],
-        trailer: path.concat(`/Trailer_${language}.mp4`) //body.trailers[language]
+        poster: await downloadPoster(
+          body.posters[language],
+          path.concat(`/Poster_${language}.jpg`),
+          this.logger
+        ),
+        trailer: await downloadTrailer(
+          body.trailers[language].replace(ROOT_YTEMBED, ROOT_YTDL),
+          path.concat(`/Trailer_${language}.mp4`),
+          this.logger
+        )
       }
     }
 
     serie.seasons = [...serie.seasons, { id: season.id, number: season.number }].sort(sortByNumber)
     serie.season_count += 1
 
-    this.logger.log('Adding season: ')
-    this.logger.log(season)
-    // Repositories.getSeasonRepository().add(season)
-    // Repositories.getNewFilesRepository().remove('seasons', id)
+    Repositories.getSeasonRepository().add(season)
+    Repositories.getNewFilesRepository().remove('seasons', id)
   }
 }

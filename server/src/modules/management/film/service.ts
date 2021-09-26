@@ -3,7 +3,14 @@ import { UseLogger } from 'src/helpers/logger'
 import { Repositories } from 'src/helpers/repository'
 import { Film } from 'src/interface'
 import { NewMedia, Research, Result } from 'src/interface/common/management'
-import { ROOT_IMAGES_TMDB_500, ROOT_IMAGES_TMDB_ORIGINAL } from 'src/tmdb/config'
+import { downloadBackdrop, downloadPoster } from 'src/management/image'
+import { downloadTrailer } from 'src/management/video'
+import {
+  ROOT_IMAGES_TMDB_500,
+  ROOT_IMAGES_TMDB_ORIGINAL,
+  ROOT_YTDL,
+  ROOT_YTEMBED
+} from 'src/tmdb/config'
 import { getFilmDetails, searchFilm, searchFilmImages, searchFilmVideos } from 'src/tmdb/film'
 import { TMDBFilm } from 'src/tmdb/interface'
 import { From3166To639, SupportedLanguages_3166, SupportedLanguages_639 } from 'src/tmdb/language'
@@ -81,7 +88,7 @@ export class FilmManagementService extends UseLogger {
       result.backdrops.push(
         backdrops.map(image => `${ROOT_IMAGES_TMDB_ORIGINAL}${image.file_path}`)
       )
-      result.trailers.push(trailers.map(video => `https://www.youtube.com/embed/${video.key}`))
+      result.trailers.push(trailers.map(video => `${ROOT_YTEMBED}${video.key}`))
     }
 
     return result
@@ -93,8 +100,6 @@ export class FilmManagementService extends UseLogger {
       .find(film => film.id === id)
     const { path } = Repositories.getFileRepository().getById(fileId)
 
-    // const backdrop = downloadFilmBackdrop(body.backdrop, path.replace('.mkv', '.jpg'), this.logger)
-
     let TMDBfilms: TMDBFilm[] = []
     for (const language of SupportedLanguages_3166) {
       TMDBfilms.push(await getFilmDetails(body.tmdb_id, From3166To639(language)))
@@ -103,8 +108,7 @@ export class FilmManagementService extends UseLogger {
     const film: Film = {
       id,
       file_id: fileId,
-      backdrop: path.replace('.mkv', '.jpg'),
-      // backdrop,
+      backdrop: await downloadBackdrop(body.backdrop, path.replace('.mkv', '.jpg'), this.logger),
       average_vote: TMDBfilms[0].vote_average,
       genres: TMDBfilms[0].genre_ids,
       original_title: TMDBfilms[0].original_title,
@@ -121,24 +125,20 @@ export class FilmManagementService extends UseLogger {
       film[language] = {
         title: TMDBfilms[index].title,
         overview: TMDBfilms[index].overview,
-        poster: path.replace('.mkv', `_${language}.jpg`),
-        // poster: await downloadFilmPoster(
-        //   body.posters[language],
-        //   path.replace('.mkv', `_${language}.jpg`),
-        //   this.logger
-        // ),
-        trailer: path.replace('.mkv', `_${language}.mp4`)
-        // trailer: await downloadFilmTrailer(
-        //   body.trailers[language],
-        //   path.replace('.mkv', `_${language}.mp4`),
-        //   this.logger
-        // )
+        poster: await downloadPoster(
+          body.posters[language],
+          path.replace('.mkv', `_${language}.jpg`),
+          this.logger
+        ),
+        trailer: await downloadTrailer(
+          body.trailers[language].replace(ROOT_YTEMBED, ROOT_YTDL),
+          path.replace('.mkv', `_${language}.mp4`),
+          this.logger
+        )
       }
     }
 
-    this.logger.log('Adding film: ')
-    this.logger.log(film)
-    // Repositories.getFilmRepository().add(film)
-    // Repositories.getNewFilesRepository().remove('films', id)
+    Repositories.getFilmRepository().add(film)
+    Repositories.getNewFilesRepository().remove('films', id)
   }
 }

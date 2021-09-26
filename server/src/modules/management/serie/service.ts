@@ -59,7 +59,7 @@ export class SerieManagementService extends UseLogger {
         })
         // Else just add the infos of this language
       } else {
-        results.forEach(({ name, overview, backdrop_path, poster_path }, index) => {
+        results.forEach(({ name, overview }, index) => {
           result.results[index][language_639_1] = { title: name, overview }
         })
       }
@@ -101,9 +101,7 @@ export class SerieManagementService extends UseLogger {
         overview: TMDBSeries[index].overview
       }
     }
-    this.logger.log('Adding serie: ')
-    this.logger.log(serie)
-    // Repositories.getSerieRepository().add(serie)
-    // Repositories.getNewFilesRepository().remove('series', id)
+    Repositories.getSerieRepository().add(serie)
+    Repositories.getNewFilesRepository().remove('series', id)
   }
 }

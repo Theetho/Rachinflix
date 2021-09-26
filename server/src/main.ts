@@ -35,7 +35,7 @@ const PORT = 3001
 class Bootstrap extends UseLogger {
   constructor() {
     super()
-    NestFactory.create(AppModule, { logger: ['log', 'error', 'warn', 'debug'] }).then(app => {
+    NestFactory.create(AppModule, { logger: ['log', 'error', 'warn'] }).then(app => {
       app.listen(PORT, addresses['Ethernet'] ?? addresses['Wi-Fi'], () =>
         this.logger.log(`Listening on ${addresses['Ethernet'] ?? addresses['Wi-Fi']}:${PORT}`)
       )
