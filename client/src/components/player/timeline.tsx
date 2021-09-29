@@ -21,17 +21,16 @@ export const TimelineComponent: React.FC<{
       position: 0,
       width: 0,
       show: false
-    },
-    interval: undefined as number | undefined
+    }
   }))
 
   const moveTimeline = useCallback(() => {
     if (!video) return
 
     const buffered = video.buffered.length ? video.buffered.end(video.buffered.length - 1) : 0
-    state.buffered = buffered / video.duration
+    state.buffered = (buffered * 100) / video.duration
 
-    state.played = video.currentTime / video.duration
+    state.played = (video.currentTime * 100) / video.duration
   }, [video])
 
   const moveTooltip = useCallback(
@@ -78,18 +77,9 @@ export const TimelineComponent: React.FC<{
   }, [])
 
   useEffect(() => {
-    window.clearInterval(state.interval)
-
-    console.log('Setting movetimeline interval')
-    state.interval = window.setInterval(() => moveTimeline, 5000)
+    video?.addEventListener('timeupdate', moveTimeline)
     video?.addEventListener('seeking', moveTimeline)
-
-    return () => {
-      window.clearInterval(state.interval)
-      console.log('Clearing movetimeline interval')
-      state.interval = undefined
-    }
-  }, [moveTimeline])
+  }, [video, moveTimeline])
 
   return (
     <div id={'player-timeline'}>

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { inline } from 'src/helpers/list'
 import { UseLogger } from 'src/helpers/logger'
 import { Repositories } from 'src/helpers/repository'
 import { Serie } from 'src/interface'
@@ -69,9 +70,7 @@ export class SerieManagementService extends UseLogger {
   }
 
   async addSerie(id: string, body: NewMedia) {
-    const { path } = Repositories.getNewFilesRepository()
-      .getSeries()
-      .find(serie => serie.id === id)
+    const { path } = Repositories.getNewFilesRepository().getById('series', id)
 
     let TMDBSeries: TMDBSerie[] = []
     for (const language of SupportedLanguages_3166) {
@@ -101,6 +100,7 @@ export class SerieManagementService extends UseLogger {
         overview: TMDBSeries[index].overview
       }
     }
+    this.logger.debug(`Adding new serie ${inline({ id })}`)
     Repositories.getSerieRepository().add(serie)
     Repositories.getNewFilesRepository().remove('series', id)
   }

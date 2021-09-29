@@ -43,9 +43,6 @@ export const TracksComponent: React.FC<{ file?: FileHateoas }> = observer(({ fil
 
     api.query<SubtitleHateoas[]>(file, 'getSubtitles').then(subtitles => {
       let selected = subtitles.findIndex(({ language }) => language === store.getUserLanguage('text'))
-      if (selected === -1) {
-        selected = 0
-      }
       state.subtitles = {
         selected,
         values: subtitles
@@ -71,7 +68,6 @@ export const TracksComponent: React.FC<{ file?: FileHateoas }> = observer(({ fil
   useEffect(() => {
     if (state.audios?.selected == null) return
 
-    console.log(state.audios?.values[state.audios.selected])
     api.query<RemuxHateoas>(state.audios?.values[state.audios.selected], 'getAudio').then(state.query)
   }, [state.audios?.selected])
 
@@ -114,6 +110,16 @@ export const TracksComponent: React.FC<{ file?: FileHateoas }> = observer(({ fil
           <div>
             <div>Subtitles</div>
             <ul>
+              <li
+                className={classNames(state.subtitles?.selected === -1 && 'selected')}
+                onClick={() => {
+                  if (!state.subtitles) return
+
+                  state.subtitles.selected = -1
+                }}
+              >
+                Off
+              </li>
               {state.subtitles?.values.map(({ title }, index) => (
                 <li
                   key={`subtitle-track-${index}`}

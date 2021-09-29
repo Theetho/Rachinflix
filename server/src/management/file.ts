@@ -1,6 +1,7 @@
 import Ffmpeg, { ffprobe } from 'fluent-ffmpeg'
 import { ROOT_FILES } from 'src/config'
 import { durationToSeconds, secondsToDuration } from 'src/helpers/duration'
+import { Repositories } from 'src/helpers/repository'
 import { Duration, File, Language } from 'src/interface'
 import { Label_Language_3166_1, PrefixLabelLanguage_3166_1 } from 'src/tmdb/language'
 
@@ -36,16 +37,27 @@ export async function createFile(id: string, path: string): Promise<File> {
             }
           }),
         subtitles: data.streams
-          .filter(stream => stream.codec_type === 'subtitle')
+          .filter(
+            stream =>
+              stream.codec_type === 'subtitle' &&
+              ['subrip', 'srt', 'webvtt'].includes(stream.codec_name)
+          )
           .map((stream, index) => {
             const language = getLanguage639_1(stream)
+
+            Repositories.getDownloadRepository().add('subtitles', {
+              localFrom: path,
+              localTo: path.replace('.mkv', `_${index + 1}.vtt`),
+              index: stream.index
+            })
+
             return {
               index: index + 1,
               language,
               is_forced: getIsForced(stream),
               title: language
                 ? `${Label_Language_3166_1[language.slice(0, 3)]}${
-                    PrefixLabelLanguage_3166_1[language.slice(4)]
+                    PrefixLabelLanguage_3166_1[language.slice(4)] ?? ''
                   }`
                 : `Piste ${index + 1}`,
               path: path.replace('.mkv', `_${index + 1}.vtt`)

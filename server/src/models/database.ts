@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { JsonDB } from 'node-json-db'
 import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
-import { ROOT_DATABASE } from 'src/config'
+import { ROOT_DATABASE } from '../config'
 
 @Injectable()
 export class Database<T> {
@@ -9,7 +9,7 @@ export class Database<T> {
   protected readonly root: string
 
   constructor(root: string) {
-    Database.database = new JsonDB(new Config(`${ROOT_DATABASE}/DB_TEST.json`, true, true, '/'))
+    Database.database = new JsonDB(new Config(`${ROOT_DATABASE}/DB.json`, true, true, '/'))
     this.makeReadableCopy()
     this.root = root
   }

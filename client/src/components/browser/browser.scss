@@ -33,29 +33,34 @@
       }
     }
   }
-}
-
-.file-browser-play-now {
-  position: absolute;
-  min-width: 15%;
-  left: 10%;
-  bottom: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  font-weight: bold;
-  z-index: 1;
-  padding: 0.8em 0.3em !important;
-  .icon {
-    transform: scale(2) rotate(0deg);
-    transition: 0.25s all;
-  }
-  &:hover {
-    .icon {
-      transform: scale(2) rotate(90deg);
+  .button {
+    position: absolute;
+    left: 5%;
+    min-width: 15%;
+    left: 10%;
+    bottom: 20%;
+    .file-browser-play-now {
+      position: absolute;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      font-weight: bold;
+      z-index: 1;
+      padding: 0.8em 0.3em !important;
+      .icon {
+        transform: scale(3) rotate(0deg);
+        transition: 0.25s all;
+      }
+      &:hover {
+        .icon {
+          transform: scale(3) rotate(90deg);
+        }
+      }
     }
   }
 }
+
 /* from https://bulma.io/documentation/components/modal/ */
 .modal-close {
   height: 32px;

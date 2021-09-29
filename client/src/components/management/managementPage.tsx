@@ -58,6 +58,7 @@ export const ManagementPage: React.FC = observer(() => {
   }, [])
 
   useEffect(() => {
+    state.complete = false
     if (state.itemsToSearch?.length === 0) {
       if (state.currentResult) {
         api
@@ -76,6 +77,7 @@ export const ManagementPage: React.FC = observer(() => {
     }
 
     if (!state.itemsToSearch) {
+      // state.complete = true
       return
     }
 

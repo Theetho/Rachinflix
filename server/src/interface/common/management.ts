@@ -72,7 +72,9 @@ export interface Research {
   type: 'films' | 'series' | 'seasons'
   _links:
     | {
-        continue: { href: `/management?type=${'films' | 'series' | 'seasons' | 'episodes'}` }
+        continue: {
+          href: `/management?type=${'films' | 'series' | 'seasons'}` | `/management/episodes`
+        }
       }
     | undefined
   _actions: {

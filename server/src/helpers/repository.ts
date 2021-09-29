@@ -1,3 +1,4 @@
+import { DownloadRepository } from 'src/management/repository'
 import { NewFileRepository } from 'src/newfilesmanager/repository'
 import { EpisodeRepository } from '../modules/episode/repository'
 import { FileRepository } from '../modules/file/repository'
@@ -14,6 +15,7 @@ class UseRepositories {
   static readonly seasonRepository = new SeasonRepository()
   static readonly episodeRepository = new EpisodeRepository()
   static readonly newFilesRepository = new NewFileRepository()
+  static readonly downloadsRepository = new DownloadRepository()
 
   getFilmRepository() {
     return UseRepositories.filmRepository
@@ -35,6 +37,9 @@ class UseRepositories {
   }
   getNewFilesRepository() {
     return UseRepositories.newFilesRepository
+  }
+  getDownloadRepository() {
+    return UseRepositories.downloadsRepository
   }
 }
 

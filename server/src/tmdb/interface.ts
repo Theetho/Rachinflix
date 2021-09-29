@@ -4,7 +4,7 @@ import { Language_3166_1, Language_639_1 } from './language'
 export type TMDBFilm = {
   adult?: boolean
   backdrop_path?: string /*`/${string}.jpg`*/ | null
-  genre_ids?: number[]
+  genres?: { id: number; name: string }[]
   id?: number
   original_language?: Language_639_1
   original_title?: string
