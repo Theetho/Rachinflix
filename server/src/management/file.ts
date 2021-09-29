@@ -56,9 +56,7 @@ export async function createFile(id: string, path: string): Promise<File> {
               language,
               is_forced: getIsForced(stream),
               title: language
-                ? `${Label_Language_3166_1[language.slice(0, 3)]}${
-                    PrefixLabelLanguage_3166_1[language.slice(4)] ?? ''
-                  }`
+                ? `${Label_Language_3166_1[language.slice(0, 3)]}`
                 : `Piste ${index + 1}`,
               path: path.replace('.mkv', `_${index + 1}.vtt`)
             }
