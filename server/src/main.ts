@@ -38,14 +38,14 @@ class Bootstrap extends UseLogger {
   constructor() {
     super()
     NestFactory.create(AppModule, { logger: false }).then(app => {
-      app.listen(PORT, addresses['Ethernet'] ?? addresses['Wi-Fi'], () =>
+      app.listen(PORT, addresses['Ethernet'] ?? addresses['Wi-Fi'], () => {
         this.logger.log(`Listening on ${addresses['Ethernet'] ?? addresses['Wi-Fi']}:${PORT}`)
-      )
+        const filewatcher = new FileWatcher()
+        filewatcher.watch()
+        Repositories.getUserRepository().initialize()
+      })
       app.use('/', express.static(path.join(__dirname, '../public/build')))
       app.use(cookieParser())
-      const filewatcher = new FileWatcher()
-      filewatcher.watch()
-      Repositories.getUserRepository().initialize()
     })
   }
 }

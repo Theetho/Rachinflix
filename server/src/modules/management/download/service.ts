@@ -13,11 +13,12 @@ export class DownloadManagementService extends UseLogger {
   }
 
   async downloads() {
+    const ondone = this.logger.working(`Downloading resources`)
     const { videos, backdrops, posters, thumbnails, subtitles } =
       Repositories.getDownloadRepository().getAll()
 
     for (const { uri, path } of videos) {
-      await downloadTrailer(uri, path, this.logger)
+      await downloadTrailer(uri, path)
     }
     for (const { uri, path } of backdrops) {
       await downloadBackdrop(uri, path)
@@ -31,9 +32,9 @@ export class DownloadManagementService extends UseLogger {
     for (const { localFrom, localTo, index } of subtitles) {
       await extractSubtitles(localFrom, localTo, index)
     }
+    ondone()
 
     Repositories.getDownloadRepository().clear()
-    this.logger.log(`Downloads complete`)
     Database.database.reload()
   }
 }

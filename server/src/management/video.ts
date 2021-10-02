@@ -1,26 +1,23 @@
 // import { Logger } from '@nestjs/common'
 import { spawn } from 'child_process'
-import * as Draftlog from 'draftlog'
 import * as ffprobe from 'ffmpeg-probe'
 import * as Ffmpeg from 'fluent-ffmpeg'
 import * as fs from 'fs'
 import { ROOT_TRAILERS, ROOT_YTDLEXE } from 'src/config'
 import { Logger } from 'src/logger/logger'
 
-Draftlog(console)
-
 export async function downloadTrailer(
   trailerUri: string | undefined,
-  localPath: string,
-  logger: Logger
+  localPath: string
 ): Promise<string> {
+  const logger = new Logger('Downloading')
   const path = `${ROOT_TRAILERS}${localPath}`
-  const update = console.draft(`[Downloading] ${localPath}`)
+  const update = logger.working(`${localPath}`)
   await new Promise<boolean>((resolve, reject) => {
     const windowsPath = path.replace(/\//g, '\\')
 
     if (!trailerUri) {
-      update(`[Aborting | No trailer] ${localPath}`)
+      update(false)
       return
     }
 
@@ -28,7 +25,7 @@ export async function downloadTrailer(
       `-Command`,
       `${ROOT_YTDLEXE} -o "${windowsPath}" ${trailerUri}`
     ])
-    let text = ''
+    // let text = ''
 
     ytdl
       .on('error', err => {
@@ -37,47 +34,48 @@ export async function downloadTrailer(
       })
       .on('close', (code, signal) => {
         if (code === 0) {
-          update(`[Downloaded] ${localPath}`)
+          update(true)
         }
         resolve(true)
       })
 
-    ytdl.stderr.addListener('data', chunk => {
-      let newchunk: string = chunk.toString()
-      if (newchunk.includes('\r') || newchunk.includes('\n')) {
-        const chunks = newchunk.split(/\r|\n/).reverse()
-        text += chunks.pop()
-        while (chunks.length > 0) {
-          update(text)
-          text = chunks.pop()
-        }
-      } else {
-        text += newchunk
-      }
-    })
-    ytdl.stdout.addListener('data', chunk => {
-      let newchunk: string = chunk.toString()
-      if (newchunk.includes('\r') || newchunk.includes('\n')) {
-        const chunks = newchunk.split(/\r|\n/).reverse()
-        text += chunks.pop()
-        while (chunks.length > 0) {
-          update(text)
-          text = chunks.pop()
-        }
-      } else {
-        text += newchunk
-      }
-    })
+    // ytdl.stderr.addListener('data', chunk => {
+    //   let newchunk: string = chunk.toString()
+    //   if (newchunk.includes('\r') || newchunk.includes('\n')) {
+    //     const chunks = newchunk.split(/\r|\n/).reverse()
+    //     text += chunks.pop()
+    //     while (chunks.length > 0) {
+    //       update(text)
+    //       text = chunks.pop()
+    //     }
+    //   } else {
+    //     text += newchunk
+    //   }
+    // })
+    // ytdl.stdout.addListener('data', chunk => {
+    //   let newchunk: string = chunk.toString()
+    //   if (newchunk.includes('\r') || newchunk.includes('\n')) {
+    //     const chunks = newchunk.split(/\r|\n/).reverse()
+    //     text += chunks.pop()
+    //     while (chunks.length > 0) {
+    //       update(text)
+    //       text = chunks.pop()
+    //     }
+    //   } else {
+    //     text += newchunk
+    //   }
+    // })
   })
 
-  return setAspectRatio(localPath, 640, 360, update)
+  return setAspectRatio(localPath, 640, 360, logger, update)
 }
 
 async function setAspectRatio(
   localPath: string,
   width: number,
   height: number,
-  draft: (message?: any, ...optionalParams: any[]) => void
+  logger: Logger,
+  update: (success: boolean) => void
 ): Promise<string> {
   return new Promise(async (resolve, reject) => {
     const path = `${ROOT_TRAILERS}${localPath}`
@@ -94,7 +92,7 @@ async function setAspectRatio(
       return
     }
 
-    draft(`[Resizing] ${localPath}`)
+    logger.setContext(`Resizing`)
     const output = path.replace('.mp4', '_.mp4')
 
     Ffmpeg(path)
@@ -106,7 +104,7 @@ async function setAspectRatio(
         resolve(localPath)
         fs.unlinkSync(path)
         fs.renameSync(output, path)
-        draft(`[Downloaded] ${localPath}`)
+        update(true)
       })
   })
 }

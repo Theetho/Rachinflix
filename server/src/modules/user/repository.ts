@@ -33,9 +33,10 @@ export class UserRepository extends UseLogger {
   }
 
   initialize() {
+    const ondone = this.logger.working('Cleaning up UserRepository')
     this.cleanUp('films')
     this.cleanUp('series')
-    this.logger.log('Remuxed media cleaned up!')
+    ondone()
   }
 
   getAll(): User[] {
@@ -45,6 +46,7 @@ export class UserRepository extends UseLogger {
   getById(id: string): User {
     const index = UserRepository.database.getIndex(this.root, id)
     if (index === -1) {
+      this.logger.error(`There is no user with id ${id}`)
       throw new Error(`There is no user with id ${id}`)
     }
     return UserRepository.database.getData(`${this.root}[${index}]`)
@@ -57,6 +59,7 @@ export class UserRepository extends UseLogger {
   update(user: User, modification: UserModification) {
     const index = UserRepository.database.getIndex(this.root, user.id)
     if (index === -1) {
+      this.logger.error(`There is no user with id ${user.id}`)
       throw new Error(`There is no user with id ${user.id}`)
     }
     UserRepository.database.push(`${this.root}[${index}]`, modification, false)
@@ -65,6 +68,7 @@ export class UserRepository extends UseLogger {
   delete(id: string) {
     const index = UserRepository.database.getIndex(this.root, id)
     if (index === -1) {
+      this.logger.error(`There is no user with id ${id}`)
       throw new Error(`There is no user with id ${id}`)
     }
     UserRepository.database.delete(`${this.root}[${index}]`)
@@ -78,8 +82,6 @@ export class UserRepository extends UseLogger {
   }
 
   private cleanUp(type: 'series' | 'films') {
-    this.logger.log(`Cleaning up the remuxed ${type}...`)
-
     const singular = type.substr(0, type.length - 1)
 
     let medias = this.getAll()

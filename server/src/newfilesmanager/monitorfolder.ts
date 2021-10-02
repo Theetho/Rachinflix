@@ -131,6 +131,6 @@ export class FileWatcher extends UseLogger {
       .on('unlink', (path, stats) => {})
       .on('unlinkDir', (path, stats) => {})
 
-    this.logger.log(`${ROOT_FILES} is being watched...`)
+    this.logger.log(`"${ROOT_FILES}" is being watched`)
   }
 }

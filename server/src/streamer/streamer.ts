@@ -53,6 +53,8 @@ export class Streamer extends UseLogger {
 
     this.remuxes[file.id] = { done: false, progress: 0 }
 
+    const progress = this.logger.progress(this.remuxes[file.id].progress)
+
     // Start the remuxing
     new Promise((resolve, reject) => {
       this.logger.debug(
@@ -74,13 +76,13 @@ export class Streamer extends UseLogger {
           resolve(undefined)
         })
 
-      command.stdout.pipe(process.stdout)
       command.stdout.on('data', chunk => {
         this.parse(chunk, file)
+        progress(this.remuxes[file.id].progress)
       })
-      command.stderr.pipe(process.stderr)
       command.stderr.on('data', chunk => {
         this.parse(chunk, file)
+        progress(this.remuxes[file.id].progress)
       })
     })
     return { path: undefined, done: false, progress: 0 }

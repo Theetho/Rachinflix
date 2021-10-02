@@ -1,11 +1,8 @@
-// import { Logger } from '@nestjs/common'
-import * as Draftlog from 'draftlog'
 import * as fs from 'fs'
 import * as request from 'request'
 import { ROOT_BACKDROPS, ROOT_THUMBNAILS } from 'src/config'
 import { createEmptyFile } from 'src/helpers/file'
-
-Draftlog(console)
+import { Logger } from 'src/logger/logger'
 
 export async function downloadBackdrop(
   backdropUri: string | undefined,
@@ -15,22 +12,23 @@ export async function downloadBackdrop(
     const path = `${ROOT_BACKDROPS}${localPath}`
     createEmptyFile(path)
 
+    const logger = new Logger('Downloading')
     if (!backdropUri) {
       resolve(localPath)
       return
     }
-
-    const update = console.draft(`[Downloading] ${localPath}`)
+    const update = logger.working(`${localPath}`)
 
     request.head(backdropUri, function (err, res, body) {
       request(backdropUri)
         .pipe(fs.createWriteStream(path))
         .on('close', () => {
-          update(`[Downloaded] ${localPath}`)
+          update()
           resolve(localPath)
         })
         .on('error', err => {
-          update(`[Aborting | Error] ${path}: ${err}`)
+          update(false)
+          logger.error(err)
         })
     })
   })
@@ -44,21 +42,23 @@ export async function downloadPoster(
     const path = `${ROOT_THUMBNAILS}${localPath}`
     createEmptyFile(path)
 
+    const logger = new Logger('Downloading')
     if (!posterUri) {
       resolve(localPath)
       return
     }
-    const update = console.draft(`[Downloading] ${localPath}`)
+    const update = logger.working(`${localPath}`)
 
     request.head(posterUri, function (err, res, body) {
       request(posterUri)
         .pipe(fs.createWriteStream(path))
         .on('close', () => {
-          update(`[Downloaded] ${localPath}`)
+          update()
           resolve(localPath)
         })
         .on('error', err => {
-          update(`[Aborting | Error] ${path}: ${err}`)
+          update(false)
+          logger.error(err)
         })
     })
   })
@@ -72,21 +72,23 @@ export async function downloadThumbnail(
     const path = `${ROOT_THUMBNAILS}${localPath}`
     createEmptyFile(path)
 
+    const logger = new Logger('Downloading')
     if (!thumbnailUri) {
       resolve(localPath)
       return
     }
-    const update = console.draft(`[Downloading] ${localPath}`)
+    const update = logger.working(`${localPath}`)
 
     request.head(thumbnailUri, function (err, res, body) {
       request(thumbnailUri)
         .pipe(fs.createWriteStream(path))
         .on('close', () => {
-          update(`[Downloaded] ${localPath}`)
+          update()
           resolve(localPath)
         })
         .on('error', err => {
-          update(`[Aborting | Error] ${path}: ${err}`)
+          update(false)
+          logger.error(err)
         })
     })
   })

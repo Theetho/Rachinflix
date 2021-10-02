@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common'
 import { JsonDB } from 'node-json-db'
 import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
+import { UseLogger } from 'src/helpers/logger'
 import { ROOT_DATABASE } from '../config'
 
 @Injectable()
-export class Database<T> {
+export class Database<T> extends UseLogger {
   static database: JsonDB
   protected readonly root: string
 
   constructor(root: string) {
+    super()
     Database.database = new JsonDB(new Config(`${ROOT_DATABASE}/DB.json`, true, true, '/'))
     this.makeReadableCopy()
     this.root = root
@@ -25,6 +27,7 @@ export class Database<T> {
   getById(id: string): T {
     const index = Database.database.getIndex(this.root, id)
     if (index === -1) {
+      this.logger.error(`There is no element with id ${id}`)
       throw new Error(`There is no element with id ${id}`)
     }
     return Database.database.getData(`${this.root}[${index}]`)
@@ -32,6 +35,7 @@ export class Database<T> {
 
   getByIndex(index: number): T {
     if (index > Database.database.count(this.root)) {
+      this.logger.error(`There is no element at index ${index}`)
       throw new Error(`There is no element at index ${index}`)
     }
     return Database.database.getData(`${this.root}[${index}]`)

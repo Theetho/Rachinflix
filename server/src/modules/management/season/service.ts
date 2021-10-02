@@ -101,6 +101,7 @@ export class SeasonManagementService extends UseLogger {
     const serie = Repositories.getNewFilesRepository().getById('series', serieId)
 
     if (!serie) {
+      this.logger.error('No serie registered for this season.')
       throw new Error('No serie registered for this season.')
     }
 

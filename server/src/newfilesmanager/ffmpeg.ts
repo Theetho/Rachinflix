@@ -1,13 +1,10 @@
 // import { Logger } from '@nestjs/common'
 import { spawn } from 'child_process'
-import * as Draftlog from 'draftlog'
 import * as EventEmitter from 'events'
 import { renameSync } from 'fs'
 import * as rimraf from 'rimraf'
 import { Logger } from 'src/logger/logger'
 import { Ffprobe } from './ffprobe'
-
-Draftlog(console)
 
 export async function Ffmpeg(path: string, emitter: EventEmitter, logger: Logger) {
   const output = path.replace(/([\/\\].+)+[\/\\](.+\.mkv)/, '$1/___VALID___$2')
@@ -47,7 +44,7 @@ export async function Ffmpeg(path: string, emitter: EventEmitter, logger: Logger
 
   await new Promise((resolve, reject) => {
     const ffmpeg = spawn('powershell.exe', [`-Command`, `ffmpeg.exe ${command}`])
-    const update = console.draft(`Transcoding ${path}...`)
+    const update = logger.updateable(`Transcoding ${path}...`)
     let text = ''
 
     ffmpeg

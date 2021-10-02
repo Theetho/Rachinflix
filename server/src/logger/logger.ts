@@ -1,25 +1,37 @@
-import { LoggerService } from '@nestjs/common'
 import { Console } from './color'
 
 type LoggingOptions = { foreground?: Console.Foreground; background?: Console.Background }
 type LoggingLevel = 'progress' | 'working' | 'success' | 'debug' | 'log' | 'error'
 
-export class Logger implements LoggerService {
+export class Logger {
   // The size of the longest context, to fill the other with '.' and
   // have a uniform output
   private static LongestContext: number = 0
   private static LineCount: number = 0
+  private static FirstCall: boolean = false
 
   private Context: string
 
   constructor(context?: string) {
+    if (!Logger.FirstCall) {
+      // Clear the screen on first call
+      process.stdout.write(`\x1b[0;0\x1b[2J\x1b[0;0H`)
+      Logger.FirstCall = true
+    }
+
     this.Context = context ?? this.constructor.name
 
-    if (context.length > Logger.LongestContext) {
-      Logger.LongestContext = context.length
+    if (this.Context.length > Logger.LongestContext) {
+      Logger.LongestContext = this.Context.length
     }
   }
 
+  setContext(context: string) {
+    this.Context = context
+  }
+  clear() {
+    process.stdout.write(`\x1b[0;0\x1b[2J\x1b[0;0H`)
+  }
   error(message: any) {
     this.WriteToConsole(`${Console.Foreground.Red}`, 'error', message)
   }
@@ -27,44 +39,54 @@ export class Logger implements LoggerService {
     this.WriteToConsole(`${Console.Effect.Bright}${Console.Foreground.Green}`, 'log', message)
   }
   debug(message: any) {
-    this.WriteToConsole(`${Console.Foreground.Yellow}`, 'debug', message)
+    this.WriteToConsole(`${Console.Foreground.Magenta}`, 'debug', message)
   }
-  warn(message: any) {}
   colorize(messages: any[], options?: LoggingOptions[]) {
     this.Colorize(messages, options)
   }
   progress(percent: number, options?: LoggingOptions) {
+    this.Colorize(
+      [this.FormatIntoProgressBar(percent)],
+      [options],
+      Console.Foreground.Yellow,
+      'progress'
+    )
+
     // Get the index of the line that will get updated
     const line = Logger.LineCount
-
-    this.Colorize([this.FormatIntoProgressBar(percent)], [options], 'progress')
 
     return (percent: number) => {
       // Set the cursor position to the line
-      console.log(`\x1b[${line};0H`)
-      this.Colorize([this.FormatIntoProgressBar(percent)], [options], 'progress', false)
+      process.stdout.write(`\x1b[${line};0H`)
+      this.Colorize(
+        [this.FormatIntoProgressBar(percent)],
+        [options ?? { foreground: Console.Foreground.Yellow }],
+        Console.Foreground.Yellow,
+        'progress',
+        false
+      )
       // Reset the cursor position to the bottom
-      console.log(`\x1b[${Logger.LineCount};0H`)
+      process.stdout.write(`\x1b[${Logger.LineCount};0H\n`)
     }
   }
   updateable(message: any, options?: LoggingOptions) {
+    this.Colorize([message], [options], Console.Foreground.Cyan, 'progress')
+
     // Get the index of the line that will get updated
     const line = Logger.LineCount
 
-    this.Colorize([message], [options], 'progress')
-
     return (message: any) => {
       // Set the cursor position to the line
-      console.log(`\x1b[${line};0H`)
-      this.Colorize([message], [options], 'progress', false)
+      process.stdout.write(`\x1b[${line};0H`)
+      this.Colorize([message], [options], Console.Foreground.Cyan, 'progress', false)
       // Reset the cursor position to the bottom
-      console.log(`\x1b[${Logger.LineCount};0H`)
+      process.stdout.write(`\x1b[${Logger.LineCount};0H\n`)
     }
   }
   working(message: any, options?: LoggingOptions) {
-    const line = Logger.LineCount
+    this.Colorize([message], [options], Console.Foreground.White, 'working')
 
-    this.Colorize([message], [options], 'working')
+    const line = Logger.LineCount
 
     let dots = ''
 
@@ -74,41 +96,43 @@ export class Logger implements LoggerService {
         dots = '.'
       }
 
-      console.log(`\x1b[${line};0H`)
-      this.Colorize([`${message}${dots}`], [options], 'working', false)
-      console.log(`\x1b[${Logger.LineCount};0H`)
+      process.stdout.write(`\x1b[${line};0H`)
+      this.Colorize([`${message}${dots}`], [options], Console.Foreground.White, 'working', false)
+      process.stdout.write(`\x1b[${Logger.LineCount};0H\n`)
     }, 500)
 
-    return () => {
+    return (success: boolean = true) => {
       clearInterval(interval)
       // Set the cursor position to the line
-      console.log(`\x1b[${line};0H`)
+      process.stdout.write(`\x1b[${line};0H`)
       this.Colorize(
-        [`${message}...`, 'done'],
-        [options, { foreground: Console.Foreground.Green }],
+        [`${message}...`, success ? 'done' : 'failed'],
+        [options, { foreground: success ? Console.Foreground.Green : Console.Foreground.Red }],
+        Console.Foreground.White,
         'working',
         false
       )
       // Reset the cursor position to the bottom
-      console.log(`\x1b[${Logger.LineCount};0H`)
+      process.stdout.write(`\x1b[${Logger.LineCount};0H\n`)
     }
   }
 
   private Colorize(
     messages: any[],
     options?: LoggingOptions[],
+    maincolor: string = Console.Foreground.White,
     level: LoggingLevel = 'log',
     increment: boolean = true
   ) {
     this.WriteToConsole(
-      Console.Foreground.White,
+      maincolor,
       level,
       messages
         .map(
           (text, index) =>
             `${options?.[index]?.foreground ?? ''}${options?.[index]?.background ?? ''}${text}`
         )
-        .join(Console.Effect.Reset),
+        .join(Console.Foreground.White),
       increment
     )
   }
@@ -119,15 +143,15 @@ export class Logger implements LoggerService {
     message: any,
     increment: boolean = true
   ) {
-    console.log(
+    process.stdout.write(
       `\x1b[2K${color}[${this.FormatDate()}] ${level.toUpperCase()}${this.FillWithSpace(
         'progress'.length,
         level.length
-      )} [${Console.Background.Green}${Console.Foreground.White}${
-        this.Context
-      }${color}${this.FillWithSpace(Logger.LongestContext, this.Context.length, '.')}] ${
-        Console.Effect.Reset
-      }${message}`
+      )} [${this.Context}${this.FillWithSpace(
+        Logger.LongestContext,
+        this.Context.length,
+        '.'
+      )}] ${message}\n${Console.Effect.Reset}`
     )
 
     if (increment) {
@@ -149,10 +173,12 @@ export class Logger implements LoggerService {
   }
 
   private FormatIntoProgressBar(percent: number) {
-    return `[${Array(Math.floor(percent / 2))
-      .fill('#')
-      .join('')}${Array(50 - Math.floor(percent / 2))
-      .fill('.')
-      .join('')}] (${percent}%)`
+    return `${Array(Math.floor(percent / 2))
+      .fill('\u25A0')
+      .join('')}${Console.Effect.Bright}${Console.Foreground.Black}${Array(
+      50 - Math.floor(percent / 2)
+    )
+      .fill('\u25A0')
+      .join('')}${Console.Foreground.White} (${percent}%)${Console.Effect.Reset}`
   }
 }
