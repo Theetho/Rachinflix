@@ -29,9 +29,13 @@
 }
 #header-logo {
   position: relative;
-  margin: 0 15% 0 20%;
   height: 70%;
+  margin: 0 15% 0 20%;
   cursor: pointer;
+  > img {
+    position: relative;
+    height: 100%;
+  }
 }
 
 @media screen and (min-width: 1250px) {

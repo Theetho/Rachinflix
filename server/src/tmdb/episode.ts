@@ -3,7 +3,7 @@ import { APIKEY_TMDB, ROOT_TMDB } from './config'
 import { TMDBEpisode } from './interface'
 import { Language_639_1 } from './language'
 
-export function searchEpisode(
+export function getEpisodeDetails(
   tmdb_id: number,
   season_number: number,
   number: number,

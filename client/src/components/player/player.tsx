@@ -16,12 +16,15 @@ import { constructTooltip, deconstructTooltip, Tooltip, TooltipComponent } from 
 import { Track, TracksComponent } from './tracks'
 import { VolumeHandler } from './volumeHandler'
 
-function format(details: FilmHateoas | EpisodeHateoas | SerieHateoas | undefined): string {
-  if (!details) return ''
+function format(
+  file: FilmHateoas | SerieHateoas | undefined,
+  details: FilmHateoas | EpisodeHateoas | SerieHateoas | undefined
+): string {
+  if (!details || !file) return ''
 
   const toFormat = details as EpisodeHateoas
 
-  return (toFormat?.number ? `${toFormat.serie_title} - ${formatEpisode(toFormat)} - ` : '') + details.title
+  return (toFormat?.number ? `${file.title} - ${formatEpisode(toFormat)} - ` : '') + details.title
 }
 
 export const PlayerComponent: React.FC<{
@@ -208,7 +211,9 @@ export const PlayerComponent: React.FC<{
     for (let i = 0; i < tracks.length; ++i) {
       tracks[i].mode = 'disabled'
     }
-    tracks[state.subtitles.selected].mode = 'showing'
+    if (state.subtitles.selected >= 0) {
+      tracks[state.subtitles.selected].mode = 'showing'
+    }
   }, [state.subtitles.selected, state.video.current])
 
   useEffect(() => {
@@ -268,7 +273,7 @@ export const PlayerComponent: React.FC<{
           <div className="player-controls-left">
             <ControlsComponent video={state.video.current} />
             <VolumeHandler video={state.video.current} />
-            <div>{format(state.details)}</div>
+            <div>{format(file, state.details)}</div>
           </div>
           <div className="player-controls-right">
             <TracksComponent file={state.file} />

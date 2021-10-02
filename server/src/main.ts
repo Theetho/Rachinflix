@@ -5,6 +5,7 @@ import * as os from 'os'
 import * as path from 'path'
 import { AppModule } from 'src/app.module'
 import { UseLogger } from 'src/helpers/logger'
+import { FileWatcher } from './newfilesmanager/monitorfolder'
 
 const ifaces = os.networkInterfaces()
 let addresses = {}
@@ -41,6 +42,8 @@ class Bootstrap extends UseLogger {
       )
       app.use('/', express.static(path.join(__dirname, '../public/build')))
       app.use(cookieParser())
+      const filewatcher = new FileWatcher()
+      filewatcher.watch()
     })
   }
 }

@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common'
 import { ManagementController } from './controller'
+import { DownloadManagementService } from './download/service'
+import { EpisodeManagementController } from './episode/controller'
+import { EpisodeManagementService } from './episode/service'
 import { FilmManagementController } from './film/controller'
 import { FilmManagementService } from './film/service'
 import { SeasonManagementController } from './season/controller'
@@ -13,19 +16,24 @@ import { ManagementService } from './service'
     ManagementController,
     FilmManagementController,
     SerieManagementController,
-    SeasonManagementController
+    SeasonManagementController,
+    EpisodeManagementController
   ],
   exports: [
     ManagementService,
     FilmManagementService,
     SerieManagementService,
-    SeasonManagementService
+    SeasonManagementService,
+    EpisodeManagementService,
+    DownloadManagementService
   ],
   providers: [
     ManagementService,
     FilmManagementService,
     SerieManagementService,
-    SeasonManagementService
+    SeasonManagementService,
+    EpisodeManagementService,
+    DownloadManagementService
   ]
 })
 export class ManagementModule {}

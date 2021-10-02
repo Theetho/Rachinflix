@@ -67,10 +67,10 @@ export const ItemComponent: React.FC<{ item: Item | undefined }> = observer(({ i
   }, [store.user?.languages.text])
 
   return (
-    <div className="item" id={`${item?.tmdb_id}`} style={{ minHeight: `287px` }}>
+    <div className="item" id={`${item?.tmdb_id}`} style={{ minHeight: `37vh` }}>
       {state.poster && (
         <LazyLoadImage
-          style={{ minHeight: `287px` }}
+          style={{ minHeight: `37vh` }}
           afterLoad={() => (state.loaded = true)}
           className="item-thumbnail"
           src={state.poster}

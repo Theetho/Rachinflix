@@ -1,29 +1,36 @@
 // import { Logger } from '@nestjs/common'
+import * as Draftlog from 'draftlog'
 import * as fs from 'fs'
 import * as request from 'request'
 import { ROOT_BACKDROPS, ROOT_THUMBNAILS } from 'src/config'
 import { createEmptyFile } from 'src/helpers/file'
-import { Logger } from 'src/logger/logger'
+
+Draftlog(console)
 
 export async function downloadBackdrop(
   backdropUri: string | undefined,
-  localPath: string,
-  logger: Logger
+  localPath: string
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const path = `${ROOT_BACKDROPS}${localPath}`
     createEmptyFile(path)
 
     if (!backdropUri) {
-      throw new Error("Rajoute la génération d'un backdrop si inexistant")
+      resolve(localPath)
+      return
     }
+
+    const update = console.draft(`[Downloading] ${localPath}`)
 
     request.head(backdropUri, function (err, res, body) {
       request(backdropUri)
         .pipe(fs.createWriteStream(path))
         .on('close', () => {
-          logger.log(`Downloaded the backdrop in ${localPath}`)
+          update(`[Downloaded] ${localPath}`)
           resolve(localPath)
+        })
+        .on('error', err => {
+          update(`[Aborting | Error] ${path}: ${err}`)
         })
     })
   })
@@ -31,23 +38,55 @@ export async function downloadBackdrop(
 
 export async function downloadPoster(
   posterUri: string | undefined,
-  localPath: string,
-  logger: Logger
+  localPath: string
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const path = `${ROOT_THUMBNAILS}${localPath}`
     createEmptyFile(path)
 
     if (!posterUri) {
-      throw new Error("Rajoute la génération d'un poster si inexistant")
+      resolve(localPath)
+      return
     }
+    const update = console.draft(`[Downloading] ${localPath}`)
 
     request.head(posterUri, function (err, res, body) {
       request(posterUri)
         .pipe(fs.createWriteStream(path))
         .on('close', () => {
-          logger.log(`Downloaded the poster in ${localPath}`)
+          update(`[Downloaded] ${localPath}`)
           resolve(localPath)
+        })
+        .on('error', err => {
+          update(`[Aborting | Error] ${path}: ${err}`)
+        })
+    })
+  })
+}
+
+export async function downloadThumbnail(
+  thumbnailUri: string | undefined,
+  localPath: string
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const path = `${ROOT_THUMBNAILS}${localPath}`
+    createEmptyFile(path)
+
+    if (!thumbnailUri) {
+      resolve(localPath)
+      return
+    }
+    const update = console.draft(`[Downloading] ${localPath}`)
+
+    request.head(thumbnailUri, function (err, res, body) {
+      request(thumbnailUri)
+        .pipe(fs.createWriteStream(path))
+        .on('close', () => {
+          update(`[Downloaded] ${localPath}`)
+          resolve(localPath)
+        })
+        .on('error', err => {
+          update(`[Aborting | Error] ${path}: ${err}`)
         })
     })
   })

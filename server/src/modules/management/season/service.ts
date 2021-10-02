@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { inline } from 'src/helpers/list'
 import { UseLogger } from 'src/helpers/logger'
 import { Repositories } from 'src/helpers/repository'
 import { sortByNumber } from 'src/helpers/sort'
 import { Season } from 'src/interface'
 import { NewMedia, Research, Result } from 'src/interface/common/management'
-import { downloadBackdrop, downloadPoster } from 'src/management/image'
-import { downloadTrailer } from 'src/management/video'
 import {
   ROOT_IMAGES_TMDB_500,
   ROOT_IMAGES_TMDB_ORIGINAL,
@@ -42,10 +41,10 @@ export class SeasonManagementService extends UseLogger {
       backdrops: [],
       posters: [],
       trailers: [],
-      type: 'films',
+      type: 'seasons',
       _links: {
         continue: {
-          href: `/management?type=episodes`
+          href: `/management/episodes`
         }
       },
       _actions: {
@@ -90,9 +89,7 @@ export class SeasonManagementService extends UseLogger {
   }
 
   async addSeason(id: string, body: NewMedia) {
-    const { serieId, path } = Repositories.getNewFilesRepository()
-      .getSeasons()
-      .find(season => season.id === id)
+    const { serieId, path } = Repositories.getNewFilesRepository().getById('seasons', id)
 
     const seasonNumber = Number.parseInt(
       path
@@ -101,7 +98,7 @@ export class SeasonManagementService extends UseLogger {
         .replace(/Season /, '')
     )
 
-    const serie = Repositories.getSerieRepository().getById(serieId)
+    const serie = Repositories.getNewFilesRepository().getById('series', serieId)
 
     if (!serie) {
       throw new Error('No serie registered for this season.')
@@ -124,7 +121,7 @@ export class SeasonManagementService extends UseLogger {
       vote_count: serie.vote_count,
       episode_count: 0,
       episodes: [],
-      backdrop: await downloadBackdrop(body.backdrop, path.concat('.jpg'), this.logger), //body.backdrop,
+      backdrop: path.concat('.jpg'),
       path
     }
 
@@ -132,22 +129,29 @@ export class SeasonManagementService extends UseLogger {
       const language = SupportedLanguages_3166[index]
       season[language] = {
         overview: TMDBSeasons[index].overview,
-        poster: await downloadPoster(
-          body.posters[language],
-          path.concat(`/Poster_${language}.jpg`),
-          this.logger
-        ),
-        trailer: await downloadTrailer(
-          body.trailers[language].replace(ROOT_YTEMBED, ROOT_YTDL),
-          path.concat(`/Trailer_${language}.mp4`),
-          this.logger
-        )
+        poster: path.concat(`/Poster_${language}.jpg`),
+        trailer: path.concat(`/Trailer_${language}.mp4`)
       }
+
+      Repositories.getDownloadRepository().add('posters', {
+        uri: body.posters[language],
+        path: path.concat(`/Poster_${language}.jpg`)
+      })
+      Repositories.getDownloadRepository().add('videos', {
+        uri: body.trailers[language]?.replace(ROOT_YTEMBED, ROOT_YTDL),
+        path: path.concat(`/Trailer_${language}.mp4`)
+      })
     }
+
+    Repositories.getDownloadRepository().add('backdrops', {
+      uri: body.backdrop,
+      path: path.concat('.jpg')
+    })
 
     serie.seasons = [...serie.seasons, { id: season.id, number: season.number }].sort(sortByNumber)
     serie.season_count += 1
 
+    this.logger.debug(`Adding new season for the serie ${inline({ id, serieId })}`)
     Repositories.getSeasonRepository().add(season)
     Repositories.getNewFilesRepository().remove('seasons', id)
   }

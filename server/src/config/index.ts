@@ -1,4 +1,4 @@
-const ROOT = `D:/rachinflix-v2.0.0`
+const ROOT = `D:/TaskBar Shortcuts/rachinflix-v2.0.0`
 export const ROOT_PROJECT = `${ROOT}/server`
 export const ROOT_FILES = `E:/Site`
 export const ROOT_SPRITES = `${ROOT_PROJECT}/private/users/sprites`
@@ -9,4 +9,4 @@ export const ROOT_THUMBNAILS = `${ROOT_PROJECT}/public/thumbnails`
 export const ROOT_BACKDROPS = `${ROOT_PROJECT}/public/backdrops`
 export const ROOT_TRAILERS = `${ROOT_PROJECT}/public/trailers`
 export const ROOT_DATABASE = `${ROOT_PROJECT}/database`
-export const ROOT_YTDLEXE = `${ROOT}/scripts/ytdl/ytdl.exe`.replace(/\//g, '\\')
+export const ROOT_YTDLEXE = `${ROOT}/scripts/ytdl/ytdl.exe`.replace(/\//g, '\\').replace(/ /g, '` ')

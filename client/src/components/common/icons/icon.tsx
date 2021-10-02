@@ -27,7 +27,8 @@ export enum IconName {
   FULLSCREEN_IN = 'icon-fullscreen-in',
   FULLSCREEN_OUT = 'icon-fullscreen-out',
   NEXT = 'icon-next',
-  PREVIOUS = 'icon-previous'
+  PREVIOUS = 'icon-previous',
+  FOLDER = 'icon-folder'
 }
 export enum IconSize {
   SMALL = 'is-small',
@@ -154,11 +155,7 @@ export const Icon: React.FC<IconProps> = observer(
                   fillRule="evenodd"
                   d="M 24 42 C 33.941406 42 42 33.941406 42 24 C 42 14.058594 33.941406 6 24 6 C 14.058594 6 6 14.058594 6 24 C 6 33.941406 14.058594 42 24 42 Z M 24 46 C 36.148438 46 46 36.148438 46 24 C 46 11.851562 36.148438 2 24 2 C 11.851562 2 2 11.851562 2 24 C 2 36.148438 11.851562 46 24 46 Z M 24 46 "
                 />
-                <path
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  d="M 32 24 L 20 32.660156 L 20 15.339844 Z M 32 24 "
-                />
+                <path fill="currentColor" fillRule="evenodd" d="M 32 24 L 20 32.660156 L 20 15.339844 Z M 32 24 " />
               </>
             )}
             {name === IconName.PLAY_RECTANGLE && (
@@ -168,11 +165,7 @@ export const Icon: React.FC<IconProps> = observer(
                   fillRule="evenodd"
                   d="M 38 6 L 10 6 C 7.789062 6 6 7.789062 6 10 L 6 38 C 6 40.210938 7.789062 42 10 42 L 38 42 C 40.210938 42 42 40.210938 42 38 L 42 10 C 42 7.789062 40.210938 6 38 6 Z M 10 2 C 5.582031 2 2 5.582031 2 10 L 2 38 C 2 42.417969 5.582031 46 10 46 L 38 46 C 42.417969 46 46 42.417969 46 38 L 46 10 C 46 5.582031 42.417969 2 38 2 Z M 10 2 "
                 />
-                <path
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  d="M 32 24 L 20 32.660156 L 20 15.339844 Z M 32 24 "
-                />
+                <path fill="currentColor" fillRule="evenodd" d="M 32 24 L 20 32.660156 L 20 15.339844 Z M 32 24 " />
               </>
             )}
             {name === IconName.PAUSE && (
@@ -394,6 +387,16 @@ export const Icon: React.FC<IconProps> = observer(
                   stroke="none"
                   fillRule="evenodd"
                   d="M 2 24 C 2 36.148438 11.851562 46 24 46 C 36.148438 46 46 36.148438 46 24 C 46 11.851562 36.148438 2 24 2 C 11.851562 2 2 11.851562 2 24 Z M 6 24 C 6 33.941406 14.058594 42 24 42 C 33.941406 42 42 33.941406 42 24 C 42 14.058594 33.941406 6 24 6 C 14.058594 6 6 14.058594 6 24 Z M 6 24 "
+                />
+              </>
+            )}
+            {name === IconName.FOLDER && (
+              <>
+                <path
+                  stroke="none"
+                  fillRule="evenodd"
+                  fill="currentColor"
+                  d="M 8 3 C 5.789062 3 4 4.789062 4 7 L 4 9 C 4 9.113281 4.003906 9.226562 4.015625 9.335938 C 1.675781 10.15625 0 12.382812 0 15 L 0 39 C 0 42.3125 2.6875 45 6 45 L 42 45 C 45.3125 45 48 42.3125 48 39 L 48 15 C 48 11.6875 45.3125 9 42 9 L 23.746094 9 C 22.859375 5.550781 19.726562 3 16 3 Z M 19.464844 9 C 18.773438 7.804688 17.480469 7 16 7 L 8 7 L 8 9 Z M 6 13 C 4.894531 13 4 13.894531 4 15 L 4 39 C 4 40.105469 4.894531 41 6 41 L 42 41 C 43.105469 41 44 40.105469 44 39 L 44 15 C 44 13.894531 43.105469 13 42 13 Z M 6 13 "
                 />
               </>
             )}

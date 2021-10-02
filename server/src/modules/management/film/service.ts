@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common'
+import { inline } from 'src/helpers/list'
 import { UseLogger } from 'src/helpers/logger'
 import { Repositories } from 'src/helpers/repository'
 import { Film } from 'src/interface'
 import { NewMedia, Research, Result } from 'src/interface/common/management'
-import { downloadBackdrop, downloadPoster } from 'src/management/image'
-import { downloadTrailer } from 'src/management/video'
 import {
   ROOT_IMAGES_TMDB_500,
   ROOT_IMAGES_TMDB_ORIGINAL,
@@ -108,9 +107,9 @@ export class FilmManagementService extends UseLogger {
     const film: Film = {
       id,
       file_id: fileId,
-      backdrop: await downloadBackdrop(body.backdrop, path.replace('.mkv', '.jpg'), this.logger),
+      backdrop: path.replace('.mkv', '.jpg'),
       average_vote: TMDBfilms[0].vote_average,
-      genres: TMDBfilms[0].genre_ids,
+      genres: TMDBfilms[0].genres.map(({ id }) => id),
       original_title: TMDBfilms[0].original_title,
       release_date: TMDBfilms[0].release_date
         .split('-')
@@ -125,19 +124,26 @@ export class FilmManagementService extends UseLogger {
       film[language] = {
         title: TMDBfilms[index].title,
         overview: TMDBfilms[index].overview,
-        poster: await downloadPoster(
-          body.posters[language],
-          path.replace('.mkv', `_${language}.jpg`),
-          this.logger
-        ),
-        trailer: await downloadTrailer(
-          body.trailers[language].replace(ROOT_YTEMBED, ROOT_YTDL),
-          path.replace('.mkv', `_${language}.mp4`),
-          this.logger
-        )
+        poster: path.replace('.mkv', `_${language}.jpg`),
+        trailer: path.replace('.mkv', `_${language}.mp4`)
       }
+
+      Repositories.getDownloadRepository().add('posters', {
+        uri: body.posters[language],
+        path: path.replace('.mkv', `_${language}.jpg`)
+      })
+      Repositories.getDownloadRepository().add('videos', {
+        uri: body.trailers[language]?.replace(ROOT_YTEMBED, ROOT_YTDL),
+        path: path.replace('.mkv', `_${language}.mp4`)
+      })
     }
 
+    Repositories.getDownloadRepository().add('backdrops', {
+      uri: body.backdrop,
+      path: path.replace('.mkv', '.jpg')
+    })
+
+    this.logger.debug(`Adding new film ${inline({ id })}`)
     Repositories.getFilmRepository().add(film)
     Repositories.getNewFilesRepository().remove('films', id)
   }

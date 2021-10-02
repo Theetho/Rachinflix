@@ -1,13 +1,18 @@
 import { WelcomePage } from 'components/authentication-page/welcome'
+import { BrowserComponent } from 'components/browser/browser'
 import { ClientEvent, useEventHandler } from 'components/common/events'
 import { Store, useStore } from 'components/common/store'
 import { HeaderComponent } from 'components/header/header'
+import { HorizontalCarouselComponent } from 'components/main-page/carousel'
 import { ManagementPage } from 'components/management/managementPage'
+import { PlayerComponent } from 'components/player/player'
+import { VerticalCarouselComponent } from 'components/user-profile/profile'
 import { itemsPerSlide, itemsPerVerticalCarousel, slidesPerCarousel } from 'config'
 import { useApi } from 'contexts/api'
 import { FilmHateoas, SerieHateoas, UserHateoas } from 'interface'
 import { observer, useLocalObservable } from 'mobx-react'
 import React, { useEffect } from 'react'
+import { Route, Switch } from 'react-router-dom'
 import './App.scss'
 
 export type Item = FilmHateoas | SerieHateoas
@@ -83,9 +88,10 @@ export const App = observer(() => {
       state.profile = undefined
       // Reload the profile
       setTimeout(() => {
-        api
-          .query<Array<FilmHateoas | SerieHateoas>>(store.getUser() as UserHateoas, 'getProfile')
-          .then(profile => (state.profile = profile))
+        api.query<Array<FilmHateoas | SerieHateoas>>(store.getUser() as UserHateoas, 'getProfile').then(profile => {
+          console.log(profile)
+          state.profile = profile
+        })
       }, 200)
       // Delete the player after it faded out
       setTimeout(() => {
@@ -119,11 +125,20 @@ export const App = observer(() => {
     state.profile = undefined
 
     api.get<Array<FilmHateoas | SerieHateoas>>(`/carousels`).then(files => {
-      const overflow = files.length % (itemsPerSlide * slidesPerCarousel)
+      console.log(files.length, itemsPerSlide, slidesPerCarousel)
+      // Number of files that can't fit into a vertical carousel
+      let overflow = files.length % (itemsPerSlide * slidesPerCarousel)
+      if (overflow < itemsPerVerticalCarousel * 3) {
+        overflow += itemsPerSlide * slidesPerCarousel
+      }
+
+      // All the files that will be put into vertical carousels
       const verticalItems = files.slice(0, overflow)
+      // All the files that will be put into horizontal carousels
       const horizontalItems = files.slice(overflow)
 
       state.carousels.vertical = new Array(Math.floor(verticalItems.length / itemsPerVerticalCarousel)).fill([])
+
       while (verticalItems.length > 0) {
         for (let i = 0; i < state.carousels.vertical.length; ++i) {
           const item = verticalItems.pop()
@@ -160,53 +175,61 @@ export const App = observer(() => {
         <div id={'container-authenticated'}>
           <HeaderComponent />
           <div id="rachinflix-body">
-            <ManagementPage />
-            {/* {state.browsed && <BrowserComponent details={state.browsed} />}
-            {state.file && <PlayerComponent file={state.file} />}
-            <VerticalCarouselComponent
-              title={
-                store.getUser()
-                  ? store.getUserLanguage('text') === 'fre-FR'
-                    ? `Reprendre le profil de ${store.getUsername()}`
-                    : `Resume ${store.getUsername()}'s profile`
-                  : ''
-              }
-              items={state.profile}
-            />
-            {!state.carousels.horizontal ? (
-              <>
-                <HorizontalCarouselComponent
-                  title={getCarouselTitle(0, store)}
-                  slides={new Array(slidesPerCarousel).fill(new Array(itemsPerSlide).fill(undefined))}
-                />
-                <HorizontalCarouselComponent
-                  title={getCarouselTitle(1, store)}
-                  slides={new Array(slidesPerCarousel).fill(new Array(itemsPerSlide).fill(undefined))}
-                />
-              </>
-            ) : (
-              state.carousels.horizontal.map((slides: Slide[], i: number) => {
-                if (state.carousels.ratio == null || state.carousels.vertical == null) return
-
-                const addVerticalSlide = i > 0 && i % state.carousels.ratio === 0
-                return (
+            <Switch>
+              <Route exact path="/">
+                {state.browsed && <BrowserComponent details={state.browsed} />}
+                {state.file && <PlayerComponent file={state.file} />}
+                {state.profile && state.profile.length > 0 && (
+                  <VerticalCarouselComponent
+                    title={
+                      store.getUser()
+                        ? store.getUserLanguage('text') === 'fre-FR'
+                          ? `Reprendre le profil de ${store.getUsername()}`
+                          : `Resume ${store.getUsername()}'s profile`
+                        : ''
+                    }
+                    items={state.profile}
+                  />
+                )}
+                {!state.carousels.horizontal ? (
                   <>
                     <HorizontalCarouselComponent
-                      key={`horizontal-carousel-${i}`}
-                      title={getCarouselTitle(i, store)}
-                      slides={slides}
+                      title={getCarouselTitle(0, store)}
+                      slides={new Array(slidesPerCarousel).fill(new Array(itemsPerSlide).fill(undefined))}
                     />
-                    {addVerticalSlide && (
-                      <VerticalCarouselComponent
-                        key={`vertical-carousel-${i}`}
-                        title={getCarouselTitle(i + 4, store)}
-                        items={state.carousels.vertical[i / state.carousels.ratio - 1]}
-                      />
-                    )}
+                    <HorizontalCarouselComponent
+                      title={getCarouselTitle(1, store)}
+                      slides={new Array(slidesPerCarousel).fill(new Array(itemsPerSlide).fill(undefined))}
+                    />
                   </>
-                )
-              })
-            )} */}
+                ) : (
+                  state.carousels.horizontal.map((slides: Slide[], i: number) => {
+                    if (state.carousels.ratio == null || state.carousels.vertical == null) return
+
+                    const addVerticalSlide = i > 0 && i % state.carousels.ratio === 0
+                    return (
+                      <>
+                        <HorizontalCarouselComponent
+                          key={`horizontal-carousel-${i}`}
+                          title={getCarouselTitle(i, store)}
+                          slides={slides}
+                        />
+                        {addVerticalSlide && (
+                          <VerticalCarouselComponent
+                            key={`vertical-carousel-${i}`}
+                            title={getCarouselTitle(i + 4, store)}
+                            items={state.carousels.vertical[i / state.carousels.ratio - 1]}
+                          />
+                        )}
+                      </>
+                    )
+                  })
+                )}
+              </Route>
+              <Route path="/management">
+                <ManagementPage />
+              </Route>
+            </Switch>
           </div>
         </div>
       )}

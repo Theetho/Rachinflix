@@ -5,19 +5,22 @@ import { ApiProvider } from 'contexts/api'
 import { EventEmitter } from 'fbemitter'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 import { App } from './App'
 import './style.scss'
 
 const eventHandler = new EventEmitter()
-const api = new Api('/api')
-// const api = new Api()
+// const api = new Api('/api')
+const api = new Api()
 
 ReactDOM.render(
   <React.StrictMode>
     <EventHandlerProvider handler={eventHandler}>
       <ApiProvider api={api}>
         <StoreProvider>
-          <App />
+          <Router>
+            <App />
+          </Router>
         </StoreProvider>
       </ApiProvider>
     </EventHandlerProvider>

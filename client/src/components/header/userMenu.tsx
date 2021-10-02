@@ -6,6 +6,7 @@ import { useApi } from 'contexts/api'
 import { Language, UserHateoas, UserModifiedOrCreated } from 'interface'
 import { observer, useLocalObservable } from 'mobx-react'
 import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import './userMenu.scss'
 
 const LANGUAGE_MENU = {
@@ -32,6 +33,7 @@ export const UserMenuComponent: React.FC = observer(() => {
     toggle: false,
     toggleLanguage: false,
     toggleModification: false,
+    toggleNewFiles: false,
     currentLanguages: {
       text: undefined as Language | undefined,
       audio: undefined as Language | undefined
@@ -119,6 +121,10 @@ export const UserMenuComponent: React.FC = observer(() => {
             <Icon name={IconName.GLOBE} />
             {state.currentLanguages.text === 'eng-US' ? 'Languages' : 'Langues'}
           </div>
+          <Link className={'user-menu-section'} to="/management">
+            <Icon name={IconName.FOLDER} />
+            {state.currentLanguages.text === 'eng-US' ? 'New files' : 'Nouveaux fichiers'}
+          </Link>
           <div className={'user-menu-section'} onClick={state.logOut}>
             <Icon name={IconName.LOG_OUT} />
             {state.currentLanguages.text === 'eng-US' ? 'Sign out' : 'Deconnexion'}

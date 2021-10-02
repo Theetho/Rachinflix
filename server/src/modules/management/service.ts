@@ -9,7 +9,6 @@ import { SearchItem } from 'src/tmdb/interface'
 export class ManagementService extends UseLogger {
   constructor() {
     super()
-    this.addNewFiles()
   }
 
   private async addNewFiles() {
@@ -26,67 +25,74 @@ export class ManagementService extends UseLogger {
     }
   }
 
-  getNewFiles(type: 'films' | 'series' | 'seasons' | 'episodes' | undefined): SearchItem[] {
-    if (type === 'films' || type == null) {
-      return Repositories.getNewFilesRepository()
-        .getFilms()
-        .map(({ fileId, id }) => {
-          const { path } = Repositories.getFileRepository().getById(fileId)
+  async getNewFiles(type: 'films' | 'series' | 'seasons' | undefined): Promise<SearchItem[]> {
+    await this.addNewFiles()
 
-          return {
-            title: path.split('/').pop(),
-            _actions: {
-              addMedia: {
-                body: undefined,
-                method: 'POST',
-                href: `/management/film/${id}`
+    if (type === 'films' || type == null) {
+      return Repositories.getNewFilesRepository().getFilms().length > 0
+        ? Repositories.getNewFilesRepository()
+            .getFilms()
+
+            .map(({ fileId, id }) => {
+              const { path } = Repositories.getFileRepository().getById(fileId)
+
+              return {
+                title: path.split('/').pop(),
+                _actions: {
+                  addMedia: {
+                    body: undefined,
+                    method: 'POST',
+                    href: `/management/film/${id}`
+                  }
+                },
+                _links: {
+                  getInformations: {
+                    href: `/management/film/${id}`
+                  }
+                }
               }
-            },
-            _links: {
-              getInformations: {
-                href: `/management/film/${id}`
-              }
-            }
-          }
-        })
+            })
+        : this.getNewFiles('series')
     } else if (type === 'series') {
-      return Repositories.getNewFilesRepository()
-        .getSeries()
-        .map(({ id, path }) => ({
-          title: path.split('/').pop(),
-          _actions: {
-            addMedia: {
-              body: undefined,
-              method: 'POST',
-              href: `/management/serie/${id}`
-            }
-          },
-          _links: {
-            getInformations: {
-              href: `/management/serie/${id}`
-            }
-          }
-        }))
+      return Repositories.getNewFilesRepository().getSeries().length > 0
+        ? Repositories.getNewFilesRepository()
+            .getSeries()
+            .map(({ id, path }) => ({
+              title: path.split('/').pop(),
+              _actions: {
+                addMedia: {
+                  body: undefined,
+                  method: 'POST',
+                  href: `/management/serie/${id}`
+                }
+              },
+              _links: {
+                getInformations: {
+                  href: `/management/serie/${id}`
+                }
+              }
+            }))
+        : this.getNewFiles('seasons')
     } else if (type === 'seasons') {
-      return Repositories.getNewFilesRepository()
-        .getSeasons()
-        .map(({ id, path }) => ({
-          title: path.split('/').reverse().slice(0, 2).reverse().join('/'),
-          _actions: {
-            addMedia: {
-              body: undefined,
-              method: 'POST',
-              href: `/management/season/${id}`
-            }
-          },
-          _links: {
-            getInformations: {
-              href: `/management/season/${id}`
-            }
-          }
-        }))
-    } else if (type === 'episodes') {
-      return undefined
+      return Repositories.getNewFilesRepository().getSeasons().length > 0
+        ? Repositories.getNewFilesRepository()
+            .getSeasons()
+            .map(({ id, path }) => ({
+              title: path.split('/').reverse().slice(0, 2).reverse().join('/'),
+              _actions: {
+                addMedia: {
+                  body: undefined,
+                  method: 'POST',
+                  href: `/management/season/${id}`
+                }
+              },
+              _links: {
+                getInformations: {
+                  href: `/management/season/${id}`
+                }
+              }
+            }))
+        : undefined
     }
 
     return undefined
