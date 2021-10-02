@@ -1,8 +1,9 @@
-import { Logger } from '@nestjs/common'
+// import { Logger } from '@nestjs/common'
 import * as fs from 'fs'
 import * as request from 'request'
 import { ROOT_BACKDROPS, ROOT_THUMBNAILS } from 'src/config'
 import { createEmptyFile } from 'src/helpers/file'
+import { Logger } from 'src/logger/logger'
 
 export async function downloadBackdrop(
   backdropUri: string | undefined,

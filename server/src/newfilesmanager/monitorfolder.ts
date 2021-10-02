@@ -1,6 +1,7 @@
-import { Logger } from '@nestjs/common'
+// import { Logger } from '@nestjs/common'
 import * as chokidar from 'chokidar'
 import * as EventEmitter from 'events'
+import { Logger } from 'src/logger/logger'
 import { v4 } from 'uuid'
 import { Ffmpeg } from './ffmpeg'
 import { NewFileRepository } from './repository'

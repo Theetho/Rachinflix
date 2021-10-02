@@ -55,8 +55,7 @@ export class Streamer extends UseLoggerProgress {
     // Start the remuxing
     new Promise((resolve, reject) => {
       this.logger.debug(
-        'Executing command: ',
-        `ffmpeg.exe -i "${input}" -loglevel fatal -hide_banner -stats ${outputoptions}`
+        `Executing command: ffmpeg.exe -i "${input}" -loglevel fatal -hide_banner -stats ${outputoptions}`
       )
       // Add blanck line
       console.log()

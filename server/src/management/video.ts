@@ -1,8 +1,9 @@
-import { Logger } from '@nestjs/common'
+// import { Logger } from '@nestjs/common'
 import { spawn } from 'child_process'
 import * as Draftlog from 'draftlog'
 import * as fs from 'fs'
 import { ROOT_TRAILERS, ROOT_YTDLEXE } from 'src/config'
+import { Logger } from 'src/logger/logger'
 
 Draftlog(console)
 

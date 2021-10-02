@@ -1,5 +1,6 @@
-import { Logger } from '@nestjs/common'
+// import { Logger } from '@nestjs/common'
 import { Language } from 'src/interface'
+import { Logger } from 'src/logger/logger'
 
 export class UseLogger {
   logger: Logger
@@ -25,18 +26,6 @@ class FileProgressLogger extends Logger {
   register(count: number) {
     this.count = count
     this.first = true
-  }
-
-  // Update the progress for a language, and flush the buffer
-  // if all language have provided their update
-  progress(progress: number | undefined, language: Language) {
-    if (progress == null) return
-
-    this.buffer[language] = progress
-
-    if (Object.keys(this.buffer).length === this.count) {
-      this.flush()
-    }
   }
 
   // Reset the logger for the next file

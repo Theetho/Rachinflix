@@ -1,9 +1,10 @@
-import { Logger } from '@nestjs/common'
+// import { Logger } from '@nestjs/common'
 import { spawn } from 'child_process'
 import * as Draftlog from 'draftlog'
 import * as EventEmitter from 'events'
 import { renameSync } from 'fs'
 import * as rimraf from 'rimraf'
+import { Logger } from 'src/logger/logger'
 import { Ffprobe } from './ffprobe'
 
 Draftlog(console)
