@@ -3,11 +3,12 @@ import { existsSync } from 'fs'
 import { ROOT_FILES, ROOT_STREAMS } from 'src/config'
 import { createEmptyFile } from 'src/helpers/file'
 import { inline } from 'src/helpers/list'
-import { UseLoggerProgress } from 'src/helpers/logger'
+import { UseLogger } from 'src/helpers/logger'
+// import { UseLoggerProgress } from 'src/helpers/logger'
 import { NvidiaCard } from 'src/helpers/nvidia'
 import { Duration, File, Language, Remux } from 'src/interface'
 
-export class Streamer extends UseLoggerProgress {
+export class Streamer extends UseLogger {
   private graphics: NvidiaCard
   private remuxes: Record<string, Omit<Remux, 'path'>>
 

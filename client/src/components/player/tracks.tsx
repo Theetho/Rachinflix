@@ -42,14 +42,13 @@ export const TracksComponent: React.FC<{ file?: FileHateoas }> = observer(({ fil
     if (!file) return
 
     api.query<SubtitleHateoas[]>(file, 'getSubtitles').then(subtitles => {
-      let selected = subtitles.findIndex(({ language }) => language === store.getUserLanguage('text'))
       state.subtitles = {
-        selected,
+        selected: -1,
         values: subtitles
       }
 
       eventHandler.emit(ClientEvent.LoadSubtitles, {
-        selected,
+        selected: -1,
         values: subtitles
       })
     })
@@ -142,6 +141,7 @@ export const TracksComponent: React.FC<{ file?: FileHateoas }> = observer(({ fil
             state.toggle = !state.toggle
             state.tooltip = deconstructTooltip('Audio (b) & Subtitles (v)')
           }}
+          className="tracks-toggle"
         >
           <Icon name={state.toggle ? IconName.TRACKS_REVERSE : IconName.TRACKS} size={IconSize.MEDIUM} />
         </div>

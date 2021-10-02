@@ -22,7 +22,6 @@ export class UserRepository extends UseLogger {
   private static database = new JsonDB(
     new Config(`${ROOT_DATABASE}/DB_USERS.json`, true, true, '/')
   )
-  private static initialized = false
   private readonly filmRepository = new FilmRepository()
   private readonly serieRepository = new SerieRepository()
   private readonly seasonRepository = new SeasonRepository()
@@ -31,12 +30,12 @@ export class UserRepository extends UseLogger {
 
   constructor() {
     super()
-    if (!UserRepository.initialized) {
-      this.cleanUp('films')
-      this.cleanUp('series')
-      this.logger.log('Remuxed media cleaned up!')
-      UserRepository.initialized = true
-    }
+  }
+
+  initialize() {
+    this.cleanUp('films')
+    this.cleanUp('series')
+    this.logger.log('Remuxed media cleaned up!')
   }
 
   getAll(): User[] {

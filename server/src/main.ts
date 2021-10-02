@@ -5,6 +5,7 @@ import * as os from 'os'
 import * as path from 'path'
 import { AppModule } from 'src/app.module'
 import { UseLogger } from 'src/helpers/logger'
+import { Repositories } from './helpers/repository'
 import { FileWatcher } from './newfilesmanager/monitorfolder'
 
 const ifaces = os.networkInterfaces()
@@ -36,7 +37,7 @@ const PORT = 3001
 class Bootstrap extends UseLogger {
   constructor() {
     super()
-    NestFactory.create(AppModule, { logger: ['log', 'error', 'warn'] }).then(app => {
+    NestFactory.create(AppModule, { logger: false }).then(app => {
       app.listen(PORT, addresses['Ethernet'] ?? addresses['Wi-Fi'], () =>
         this.logger.log(`Listening on ${addresses['Ethernet'] ?? addresses['Wi-Fi']}:${PORT}`)
       )
@@ -44,6 +45,7 @@ class Bootstrap extends UseLogger {
       app.use(cookieParser())
       const filewatcher = new FileWatcher()
       filewatcher.watch()
+      Repositories.getUserRepository().initialize()
     })
   }
 }
